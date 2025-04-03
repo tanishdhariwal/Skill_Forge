@@ -2,35 +2,41 @@
 import express from 'express';
 import cors from 'cors';
 import dotenv from 'dotenv';
-import { connectToDB } from './config/db';
 // import curriculumRoutes from './routes/curriculumRoutes';
 // import mockInterviewRoutes from './routes/mockInterviewRoutes';
 // import quizRoutes from './routes/quizRoutes';
 // import roadmapRoutes from './routes/roadmapRoutes';
-import userRouter from './routes/userRoutes';
-import errorHandler from './middlewares/errorHandler';
+import userRouter from './routes/userRoutes.js';
+// import errorHandler from './middlewares/errorHandler.js';
+import { Request, Response } from 'express';
+import connectDB from './config/db.js';
+import cookieParser from 'cookie-parser';
 
 dotenv.config();
-
 const app = express();
 const PORT = process.env.PORT || 5000;
 
+app.use(cookieParser(process.env.COOKIE_SECRET));
 // Connect to MongoDB
-connectToDB();
+connectDB();
 
 // Middleware
 app.use(cors());
 app.use(express.json());
 
 // Routes
-app.get('/api/user', userRouter);
+app.use('/api/v1/user', userRouter);
 // app.use('/api/curriculum', curriculumRoutes);
 // app.use('/api/mock-interview', mockInterviewRoutes);
 // app.use('/api/quiz', quizRoutes);
 // app.use('/api/roadmaps', roadmapRoutes);
 
 // Error handling middleware
-app.use(errorHandler);
+// app.use(errorHandler);
+
+app.get('/', (req: Request, res: Response) => {
+  res.send('Hello, World!');
+})
 
 app.listen(PORT, () => {
   console.log(`Server running on port ${PORT}`);

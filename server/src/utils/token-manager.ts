@@ -1,13 +1,17 @@
-import { JWT_SECRET,COOKIE_NAME } from "./constant.js";
+import { config } from "dotenv";
 import { Request, Response, NextFunction } from "express";
 import jwt from "jsonwebtoken";
+// import { JWT_SECRET } from "./constant";
+config();
 
-
+const JWT_SECRET = process.env.JWT_SECRET as string;
+const COOKIE_NAME = process.env.COOKIE_NAME as string;
 console.log("JWT_SECRET", JWT_SECRET);
 console.log("COOKIE_NAME", COOKIE_NAME);
 
 export const createToken = (username: string, role: string, expiresIn: string) => {
   const payload = { username, role};
+  console.log(COOKIE_NAME, JWT_SECRET)
   const token = jwt.sign(payload, JWT_SECRET,  {
     expiresIn,
   });
@@ -16,11 +20,10 @@ export const createToken = (username: string, role: string, expiresIn: string) =
 
 
 export const verifyToken = async (
-  
   req: Request,
   res: Response,
-  next: NextFunction
-) => {
+  next: NextFunction) => {
+    console.log("req.signedCookies[COOKIE_NAME]", req.signedCookies);
     const token = req.signedCookies[COOKIE_NAME];
   
   if (!token || token.trim() === "") {
