@@ -11,6 +11,8 @@ import upload from "../utils/upload.js";
 // console.log("process.env.COOKIE_NAME", process.env.COOKIE_NAME);
 import { COOKIE_NAME } from "../utils/constant.js"; 
 import { Interview } from "../models/Interview.js";
+import { StudyPlan } from "../models/StudyPlan.js";
+import { Badge } from "../models/Badge.js";
 const compare = bcrypt.compare;
 
 export const userSignup = async (
@@ -380,4 +382,114 @@ export const addExp = async (req: Request, res: Response) => {
       console.error(error);
       return res.status(500).json({ message: 'Server error', cause: error.message });
   }
+};
+
+
+export const getProfile = async (req: Request, res: Response) => {
+  try {
+    const username = res.locals.jwtData.username; // Required authentication
+    
+    const user = await User.findOne({ username })
+        .populate('Badge', 'name description type icon') // Ensure Badge schema is imported
+        .populate('studyPlans', 'title')
+        .populate('interviews', '_id');
+
+    if (!user) {
+        return res.status(404).json({ message: 'User not found' });
+    }
+
+    // Calculate study plan progress
+    const studyPlansWithProgress = await StudyPlan.find({ author: user._id })
+        .populate({
+            path: 'nodes',
+            select: 'progress'
+        });
+
+    const studyPlans = studyPlansWithProgress.map(sp => ({
+        title: sp.title,
+        progress: sp.nodes.length > 0 ? 
+            (sp.nodes.reduce((sum, node:any) => sum + node.progress, 0) / sp.nodes.length) : 0
+    }));
+
+    res.json({
+        username: user.username,
+        level: user.level,
+        exp: user.exp,
+        interviewCount: user.interviews.length,
+        studyPlanCount: user.studyPlans.length,
+        streak: user.streak.score,
+        longestStreak: user.longestStreak,
+        badges: user.badges,
+        studyPlans
+    });
+} catch (error) {
+    console.error(error);
+    res.status(500).json({ message: 'Internal Server Error' });
+}
+};
+
+
+export const createBadge = async (req: Request, res: Response) => {
+  try {
+    const { name, description, type, requirement, icon } = req.body;
+    const badge = new Badge({ name, description, type, requirement, icon });
+    await badge.save();
+    res.status(201).json(badge);
+} catch (error) {
+    res.status(400).json({ error: error.message });
+}
+};
+
+export const getUserBadges = async (req: Request, res: Response) => {
+  try {
+      const username = res.locals.jwtData.username;
+      const user = await User.findOne({ username }).populate('badges');
+      if (!user) {
+          return res.status(404).json({ message: 'User not found' });
+      }
+      return res.status(200).json({ badges: user.badges });
+  } catch (error) {
+      console.error(error);
+      return res.status(500).json({ message: 'Server error', cause: error.message });
+  }
+};
+
+export const getAllBadges = async (req: Request, res: Response) => {
+  try {
+      const badges = await Badge.find();
+      return res.status(200).json({ badges });
+  } catch (error) {
+      console.error(error);
+      return res.status(500).json({ message: 'Server error', cause: error.message });
+  }
+};
+
+export const addBadge = async (req: Request, res: Response) => {
+  try {
+    const username = res.locals.jwtData.username;
+    const userId = (await User.findOne({ username }))._id;
+    const user = await User.findById(userId);
+    if (!user) return res.status(404).json({ error: "User not found" });
+    
+    const badges = await Badge.find();
+    let newBadges: any[] = [];
+    
+    for (const badge of badges) {
+        let meetsRequirement = false;
+        
+        if (badge.type === "streak" && user.streak.score >= badge.requirement) meetsRequirement = true;
+        if (badge.type === "quiz" && user.quizzesCompleted >= badge.requirement) meetsRequirement = true;
+        if (badge.type === "challenge" && user.challengesCompleted >= badge.requirement) meetsRequirement = true;
+        
+        if (meetsRequirement && !user.badges.includes(badge._id)) {
+            user.badges.push(badge._id);
+            newBadges.push(badge);
+        }
+    }
+    
+    await user.save();
+    res.status(200).json({ newBadges });
+} catch (error) {
+    res.status(500).json({ error: error.message });
+}
 };
