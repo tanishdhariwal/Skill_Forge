@@ -41,7 +41,7 @@ createRoot(document.getElementById("root")!).render(
           <ClickSpark
             sparkColor="#fff"
             sparkSize={10}
-            sparkRadius={15}
+            sparkRadius={20}
             sparkCount={8}
             duration={400}
           >

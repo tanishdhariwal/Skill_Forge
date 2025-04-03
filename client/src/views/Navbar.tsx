@@ -13,7 +13,7 @@ const Navbar = () => {
       const response = await axios.get('/user/updateStreak');
       console.log(response.data); // Log the response for debugging
       // Assuming API returns { points: number }
-      setPoints(response.data.CurrentStreak); // Update points with the longest streak
+      setPoints(response.data.longestStreak); // Update points with the longest streak
     } catch (error) {
       console.error('Error updating points:', error);
     }
