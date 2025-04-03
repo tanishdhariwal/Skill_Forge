@@ -27,23 +27,23 @@ export const userSignup = async (
     await user.save();
 
     // create token and store cookie
-    res.clearCookie(COOKIE_NAME, {
-      httpOnly: true,
-    // domain: process.env.FRONTEND_URL,
-    signed: true,
-    path: "/",
-    });
+    // res.clearCookie(COOKIE_NAME, {
+    //   httpOnly: true,
+    // // domain: process.env.FRONTEND_URL,
+    // signed: true,
+    // path: "/",
+    // });
 
-    const token = createToken(user.username, "user", "7d");
-    const expires = new Date();
-    expires.setDate(expires.getDate() + 7);
-    res.cookie(COOKIE_NAME, token, {
-      httpOnly: true,
-      signed: true,
-      secure: true,
-      maxAge: 3600000,
-      path: "/",
-    });
+    // const token = createToken(user.username, "user", "7d");
+    // const expires = new Date();
+    // expires.setDate(expires.getDate() + 7);
+    // res.cookie(COOKIE_NAME, token, {
+    //   httpOnly: true,
+    //   signed: true,
+    //   secure: true,
+    //   maxAge: 3600000,
+    //   path: "/",
+    // });
 
     return res
       .status(201)

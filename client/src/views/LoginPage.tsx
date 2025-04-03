@@ -5,8 +5,7 @@ import { Eye, EyeOff } from 'lucide-react';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Button } from '@/components/ui/button';
-import { loginUser, signup } from '../communications/userCommunications';
-import { toast } from "react-hot-toast";
+import { useAuth } from '../context/AuthContext';
 
 // Form animations
 const formVariants = {
@@ -29,12 +28,15 @@ const formVariants = {
   }
 };
 
-export const LogiPage = () => {
+export const LoginPage = () => {
   const navigate = useNavigate();
+  const { login, signup } = useAuth();
   const [isLogin, setIsLogin] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
+  const [name, setName] = useState('');
+  const [email, setEmail] = useState('');
   const [error, setError] = useState('');
 
   // Define images for each mode.
@@ -43,9 +45,10 @@ export const LogiPage = () => {
 
   const toggleForm = () => {
     setIsLogin(!isLogin);
-    // Reset form fields when toggling
     setUsername('');
     setPassword('');
+    setName('');
+    setEmail('');
     setError('');
   };
 
@@ -53,22 +56,15 @@ export const LogiPage = () => {
     e.preventDefault();
     setError('');
     try {
+      console.log('Form submitted:', { username, password, name, email });
       if (isLogin) {
-        const response = await loginUser(username, password);
-        if (response) {
-          toast.success("Login successful");
-          navigate('/dashboard'); // Moved inside branch
-        }
+        await login(username, password);
       } else {
-        await signup(username, password);
-        toast.success("Signup successful");
-        navigate('/dashboard'); // Moved inside branch
+        await signup(username, name, email, password);
       }
-      navigate('/dashboard'); // Moved inside branch
-      // window.location.reload(); // Reload the page after login/signup
+      navigate('/dashboard');
     } catch (err: any) {
       setError(err.message);
-      toast.error(err.message);
     }
   };
 
@@ -78,7 +74,7 @@ export const LogiPage = () => {
       <div className="w-full md:w-1/2 flex flex-col justify-center items-start p-6 md:p-12 lg:p-16">
         <div className="w-full max-w-md mx-auto">
           <div className="text-left mb-8">
-            <h1 className="text-4xl font-bold tracking-tight">UP SKILL</h1>
+            <h1 className="text-4xl font-bold tracking-tight">SKILL GARAGE</h1>
             <p className="mt-2 text-gray-400">
               {isLogin ? 'Welcome back! Please log in.' : 'Join our platform to enhance your skills.'}
             </p>
@@ -94,6 +90,7 @@ export const LogiPage = () => {
               exit="exit"
               className="space-y-6"
             >
+              {/* Username Field */}
               <div className="grid gap-1">
                 <Label htmlFor="username" className="text-sm font-medium text-gray-700">
                   Username
@@ -110,61 +107,83 @@ export const LogiPage = () => {
                 />
               </div>
 
+              {/* Additional fields for Signup */}
+              {!isLogin && (
+                <>
+                  <div className="grid gap-1">
+                    <Label htmlFor="name" className="text-sm font-medium text-gray-700">Name</Label>
+                    <Input
+                      id="name"
+                      name="name"
+                      type="text"
+                      required
+                      placeholder="Enter your name"
+                      value={name}
+                      onChange={(e) => setName(e.target.value)}
+                    />
+                  </div>
+                  <div className="grid gap-1">
+                    <Label htmlFor="email" className="text-sm font-medium text-gray-700">Email</Label>
+                    <Input
+                      id="email"
+                      name="email"
+                      type="email"
+                      required
+                      placeholder="Enter your email"
+                      value={email}
+                      onChange={(e) => setEmail(e.target.value)}
+                    />
+                  </div>
+                </>
+              )}
+
+              {/* Password Field */}
               <div className="flex flex-col gap-1 relative">
                 <Label htmlFor="password" className="text-sm font-medium text-gray-700">
                   Password
                 </Label>
                 <div className="flex items-center relative">
-
-                <Input
-                  id="password"
-                  name="password"
-                  type={showPassword ? 'text' : 'password'}
-                  autoComplete={isLogin ? 'current-password' : 'new-password'}
-                  required
-                  placeholder="Enter your password"
-                  value={password}
-                  onChange={(e) => setPassword(e.target.value)}
-                  className="pr-10"
+                  <Input
+                    id="password"
+                    name="password"
+                    type={showPassword ? 'text' : 'password'}
+                    autoComplete={isLogin ? 'current-password' : 'new-password'}
+                    required
+                    placeholder="Enter your password"
+                    value={password}
+                    onChange={(e) => setPassword(e.target.value)}
+                    className="pr-10"
                   />
-                <button
-                  type="button"
-                  className="absolute inset-y-0 right-0 flex items-center pr-3"
-                  onClick={() => setShowPassword(!showPassword)}
+                  <button
+                    type="button"
+                    className="absolute inset-y-0 right-0 flex items-center pr-3"
+                    onClick={() => setShowPassword(!showPassword)}
                   >
-                  {showPassword ? (
-                    <EyeOff className="h-5 w-5 text-gray-400" />
-                  ) : (
-                    <Eye className="h-5 w-5 text-gray-400" />
-                  )}
-                </button>
-                
-                  </div>
+                    {showPassword ? (
+                      <EyeOff className="h-5 w-5 text-gray-400" />
+                    ) : (
+                      <Eye className="h-5 w-5 text-gray-400" />
+                    )}
+                  </button>
+                </div>
               </div>
 
-              {isLogin && (
-                <div className="flex items-center justify-end">
-                  <a href="#" className="text-sm text-blue-600 hover:underline">
-                    Forgot password?
-                  </a>
-                </div>
-              )}
-
+              {/* Error Message */}
               {error && <p className="text-red-500 text-sm">{error}</p>}
 
-              <Button type="submit" className=" w-full">
+              <Button type="submit" className="w-full">
                 {isLogin ? 'Log In' : 'Sign Up'}
               </Button>
 
               <div className="text-center mt-4">
                 <button type="button" onClick={toggleForm} className="text-md font-semibold text-slate-200 hover:underline">
-                  {isLogin ? "Don't have an account? Sign up " : 'Already have an account? '}<span className="text-blue-500">Log in</span>
+                  {isLogin ? "Don't have an account? Sign up" : 'Already have an account? Log in'}
                 </button>
               </div>
             </motion.form>
           </AnimatePresence>
 
-          <div className="   mt-8 text-center">
+          <div className="mt-8 text-center">
             <Link to="/" className="text-sm text-slate-200 hover:underline">
               ← Back to Home
             </Link>
@@ -180,9 +199,8 @@ export const LogiPage = () => {
             backgroundImage: `url(${isLogin ? loginImage : signUpImage})`
           }}
         >
+        </div>
       </div>
-    </div>
-  );
     </div>
   );
 };

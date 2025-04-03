@@ -24,7 +24,7 @@ app.use(cookieParser(process.env.COOKIE_SECRET));
 connectDB();
 
 // Middleware
-app.use(cors());
+app.use(cors({origin:true,credentials:true}));
 app.use(express.json());
 
 // Routes
