@@ -8,6 +8,7 @@ import ReactFlow, {
   applyNodeChanges,
   MarkerType,
   Position,
+  NodeMouseHandler,
 } from 'reactflow';
 import { BookOpen, Code, Database, Layout, Terminal, Globe, Server, FileCode, BookOpenCheck, Cloud } from 'lucide-react';
 import 'reactflow/dist/style.css';
@@ -154,28 +155,30 @@ const NodeLabel = ({
   title, 
   description, 
   type, 
-  link 
+  link,
+  completed 
 }: { 
   icon: any; 
   title: string; 
   description: string; 
   type: string;
-  link: string; 
+  link: string;
+  completed: boolean;
 }) => (
   <div className={`flex flex-col min-w-[220px] max-w-[280px] border-l-4 ${
     type === 'Mandatory' ? 'border-l-blue-500' : 'border-l-green-500'
   } bg-slate-800 rounded overflow-hidden shadow-md`}>
     <div className="flex items-center p-3 bg-slate-900 border-b border-slate-700">
       <Icon className={`h-5 w-5 ${type === 'Mandatory' ? 'text-blue-400' : 'text-green-400'} mr-2`} />
-      <h3 className="text-white text-sm font-medium flex-1 truncate">{title}</h3>
+      <h3 className={`text-white text-sm font-medium flex-1 truncate ${completed ? 'line-through opacity-70' : ''}`}>{title}</h3>
       <span className={`text-xs px-1.5 py-0.5 rounded ml-1 ${
         type === 'Mandatory' ? 'bg-blue-900/50 text-blue-300' : 'bg-green-900/50 text-green-300'
       }`}>
         {type === 'Mandatory' ? 'Core' : 'Optional'}
       </span>
     </div>
-    <div className="p-3 text-xs text-slate-300">
-      <p className="line-clamp-2">{description}</p>
+    <div className={`p-3 text-xs text-slate-300 ${completed ? 'opacity-70' : ''}`}>
+      <p className={`line-clamp-2 ${completed ? 'line-through' : ''}`}>{description}</p>
       <a 
         href={link}
         target="_blank" 
@@ -191,7 +194,7 @@ const NodeLabel = ({
 );
 
 // Transform flowData to ReactFlow nodes and edges using a clean, hierarchical layout
-const transformFlowData = (flowData: FlowChartData[]): { nodes: Node[], edges: Edge[] } => {
+const transformFlowData = (flowData: FlowChartData[], completedNodes: Set<string>): { nodes: Node[], edges: Edge[] } => {
   if (!flowData.length) return { nodes: [], edges: [] };
   
   const data = flowData[0];
@@ -262,6 +265,7 @@ const transformFlowData = (flowData: FlowChartData[]): { nodes: Node[], edges: E
           description={node.description}
           type={node.type}
           link={node.link}
+          completed={completedNodes.has(node._id)}
         />
       },
       position: { x, y },
@@ -317,24 +321,54 @@ const transformFlowData = (flowData: FlowChartData[]): { nodes: Node[], edges: E
 const FlowChart: React.FC = () => {
   const [nodes, setNodes] = useState<Node[]>([]);
   const [edges, setEdges] = useState<Edge[]>([]);
+  const [completedNodes, setCompletedNodes] = useState<Set<string>>(new Set());
 
   useEffect(() => {
-    const { nodes: flowNodes, edges: flowEdges } = transformFlowData(flowData);
+    const { nodes: flowNodes, edges: flowEdges } = transformFlowData(flowData, completedNodes);
     setNodes(flowNodes);
     setEdges(flowEdges);
-  }, []);
+  }, [completedNodes]);
 
   const onNodesChange: OnNodesChange = useCallback(
     (changes) => setNodes((nds) => applyNodeChanges(changes, nds)),
     []
   );
 
+  const onNodeContextMenu: NodeMouseHandler = useCallback(
+    (event, node) => {
+      // Prevent default browser context menu
+      event.preventDefault();
+      
+      setCompletedNodes(prev => {
+        const updated = new Set(prev);
+        if (updated.has(node.id)) {
+          updated.delete(node.id);
+        } else {
+          updated.add(node.id);
+        }
+        return updated;
+      });
+    },
+    []
+  );
+
+  const totalNodes = flowData.length > 0 ? flowData[0].nodes.length : 0;
+  const completedCount = completedNodes.size;
+
   return (
     <div className="min-h-screen bg-slate-950 pt-20 mt-10 px-8">
-      <h1 className="text-3xl font-bold mb-8 text-white flex items-center gap-2">
+      <h1 className="text-3xl font-bold mb-4 text-white flex items-center gap-2">
         <BookOpen className="h-6 w-6" />
         {flowData.length > 0 ? flowData[0].title : "Learning Roadmap"}
       </h1>
+      
+      {/* Completion counter */}
+      <div className="mb-4 text-slate-300">
+        <span className="font-medium">Progress: </span>
+        <span className="px-2 py-1 bg-slate-800 rounded text-sm">
+          {completedCount} / {totalNodes} completed
+        </span>
+      </div>
       
       {/* Simple legend */}
       <div className="mb-6 flex flex-wrap gap-6 items-center">
@@ -350,6 +384,10 @@ const FlowChart: React.FC = () => {
           <div className="w-3 h-3 bg-purple-500 rounded"></div>
           <span className="text-slate-300 text-sm">Optional Path</span>
         </div>
+        <div className="flex items-center gap-2 ml-4 border-l pl-4 border-slate-700">
+          <span className="text-slate-300 text-sm line-through">Strikethrough</span>
+          <span className="text-slate-300 text-sm">= Completed (right-click to toggle)</span>
+        </div>
       </div>
       
       <div className="w-full h-[1000px] bg-slate-950 rounded-lg border border-slate-800">
@@ -357,6 +395,7 @@ const FlowChart: React.FC = () => {
           nodes={nodes}
           edges={edges}
           onNodesChange={onNodesChange}
+          onNodeContextMenu={onNodeContextMenu}
           fitView
           nodesDraggable={true}
           zoomOnScroll={true}
