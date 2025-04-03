@@ -11,6 +11,8 @@ import userRouter from './routes/userRoutes.js';
 import { Request, Response } from 'express';
 import connectDB from './config/db.js';
 import cookieParser from 'cookie-parser';
+import studyPlanRoutes from './routes/roadmapRoutes.js';
+import interviewRouter from './routes/mockInterviewRoutes.js';
 
 dotenv.config();
 const app = express();
@@ -27,9 +29,9 @@ app.use(express.json());
 // Routes
 app.use('/api/v1/user', userRouter);
 // app.use('/api/curriculum', curriculumRoutes);
-// app.use('/api/mock-interview', mockInterviewRoutes);
+app.use('/api/interview', interviewRouter);
 // app.use('/api/quiz', quizRoutes);
-// app.use('/api/roadmaps', roadmapRoutes);
+app.use('/api/v1/studyplan', studyPlanRoutes);
 
 // Error handling middleware
 // app.use(errorHandler);
