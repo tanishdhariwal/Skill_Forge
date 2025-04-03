@@ -5,14 +5,15 @@ import axios from 'axios';
 
 const Navbar = () => {
   // Removed hardcoded points; now use state:
-  const [points, setPoints] = useState<number>(0);
+  const [points, setPoints] = useState<number>(1);
 
   // NEW: Function to fetch points from API
   const fetchPoints = async () => {
     try {
-      const response = await axios.get('http://127.0.0.1:5000/api/v1/user/updateStreak');
+      const response = await axios.get('/user/updateStreak');
+      console.log(response.data); // Log the response for debugging
       // Assuming API returns { points: number }
-      setPoints(response.data.points);
+      setPoints(response.data.longestStreak); // Update points with the longest streak
     } catch (error) {
       console.error('Error updating points:', error);
     }
