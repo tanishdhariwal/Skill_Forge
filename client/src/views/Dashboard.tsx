@@ -14,8 +14,8 @@ import {
   Settings
 } from 'lucide-react';
 import { Link } from 'react-router-dom';
-import { useEffect, useState } from 'react';
-import { fetchDashboardData } from '../communications/userCommunications';
+import { useState, useEffect } from 'react';
+import axios from 'axios';
 
 // Animation variants
 const containerVariants = {
@@ -116,42 +116,32 @@ const navItems = [
 ];
 
 const Dashboard = () => {
-  const [dashboardData, setDashboardData] = useState({
-    interviewHistory: mockInterviewHistory,
-    learningTopics: mockLearningTopics,
-    streakData: mockStreakData,
-    username: "Ramesh Rao",
-    lastModule: {
-      title: "React Hooks Deep Dive",
-      module: "Module 4: useEffect Hook"
+  // Removed: const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  // Uncomment below if the mobile state is needed within Dashboard:
+  // const { mobileMenuOpen, setMobileMenuOpen } = useOutletContext<{ mobileMenuOpen: boolean; setMobileMenuOpen: React.Dispatch<React.SetStateAction<boolean>> }>();
+  
+  const username = "Ramesh Rao"; // Hardcoded user
+
+  // NEW: Use state for streak data initialized with current mock values
+  const [streakData, setStreakData] = useState(initialStreakData);
+  
+  // NEW: Function to update streak using the API GET call; assumes API returns { streak: number }
+  const updateStreak = async () => {
+    try {
+      const response = await axios.get('http://127.0.0.1:5000/api/v1/user/updateStreak');
+      setStreakData(prev => ({
+        ...prev,
+        currentStreak: response.data.streak
+      }));
+    } catch (error) {
+      console.error('Failed to update streak:', error);
     }
-  });
+  };
 
+  // NEW: Call updateStreak on mount to fetch latest streak
   useEffect(() => {
-    const loadDashboardData = async () => {
-      try {
-        const data = await fetchDashboardData();
-        // Only update state if we received valid data
-        if (data && Object.keys(data).length > 0) {
-          setDashboardData(prevData => ({
-            interviewHistory: data.interviewHistory?.length ? data.interviewHistory : prevData.interviewHistory,
-            learningTopics: data.learningTopics?.length ? data.learningTopics : prevData.learningTopics,
-            streakData: data.streakData || prevData.streakData,
-            username: data.username || prevData.username,
-            lastModule: data.lastModule || prevData.lastModule
-          }));
-        }
-      } catch (error) {
-        // Error toast is already handled in fetchDashboardData
-        console.error('Dashboard data fetch failed:', error);
-      }
-    };
-
-    loadDashboardData();
+    updateStreak();
   }, []);
-
-  // Replace the hardcoded user and mock data references with dashboardData
-  const { username, interviewHistory, learningTopics, streakData, lastModule } = dashboardData;
 
   // Function to generate calendar grid
   const generateCalendarGrid = () => {
@@ -165,7 +155,6 @@ const Dashboard = () => {
       
       // Find if this day has a streak
       const dateString = date.toISOString().split('T')[0];
-      const streakDay = streakData.streakCalendar.find(day => day.date === dateString);
       const streakDay = streakData.streakCalendar.find(day => day.date === dateString);
       
       calendarDays.push({
@@ -242,7 +231,6 @@ const Dashboard = () => {
           <motion.div variants={itemVariants} className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
             {[
               { label: 'Current Streak', value: `${streakData.currentStreak} days`, icon: Flame, color: 'text-orange-500' },
-              { label: 'Current Streak', value: `${streakData.currentStreak} days`, icon: Flame, color: 'text-orange-500' },
               { label: 'Avg. Score', value: '82%', icon: BarChart3, color: 'text-blue-500' },
               { label: 'Time Invested', value: '86 hours', icon: Clock, color: 'text-purple-500' }
             ].map((stat, index) => (
@@ -275,7 +263,7 @@ const Dashboard = () => {
                   </Link>
                 </div>
                 <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4">
-                  {learningTopics.map((topic) => {
+                  {mockLearningTopics.map((topic) => {
                     const progressColor = categoryColors[topic.category as keyof typeof categoryColors] || 'bg-blue-500';
                     
                     return (
@@ -328,7 +316,7 @@ const Dashboard = () => {
                   </Link>
                 </div>
                 <div className="space-y-4">
-                  {interviewHistory.map((interview) => (
+                  {mockInterviewHistory.map((interview) => (
                     <Link 
                       key={interview.id}
                       to={`/analysis`}
@@ -363,9 +351,12 @@ const Dashboard = () => {
                 
                 <div className="flex justify-between mb-6">
                   <div className="text-center">
-                    <div className="text-orange-500">
-                      <Flame className="h-6 w-6 mx-auto" />
-                    </div>
+                    {/* Wrap the flame icon in a button to update the streak */}
+                    <button onClick={updateStreak} className="focus:outline-none">
+                      <div className="text-orange-500">
+                        <Flame className="h-6 w-6 mx-auto" />
+                      </div>
+                    </button>
                     <p className="text-2xl font-bold">{streakData.currentStreak}</p>
                     <p className="text-xs text-gray-400">Current Streak</p>
                   </div>
@@ -374,14 +365,12 @@ const Dashboard = () => {
                       <Flame className="h-6 w-6 mx-auto" />
                     </div>
                     <p className="text-2xl font-bold">{streakData.longestStreak}</p>
-                    <p className="text-2xl font-bold">{streakData.longestStreak}</p>
                     <p className="text-xs text-gray-400">Longest Streak</p>
                   </div>
                   <div className="text-center">
                     <div className="text-green-500">
                       <BookOpen className="h-6 w-6 mx-auto" />
                     </div>
-                    <p className="text-2xl font-bold">{streakData.thisMonth}</p>
                     <p className="text-2xl font-bold">{streakData.thisMonth}</p>
                     <p className="text-xs text-gray-400">This Month</p>
                   </div>
@@ -457,7 +446,7 @@ const Dashboard = () => {
             <div className="flex flex-col md:flex-row md:items-center justify-between">
               <div>
                 <h2 className="text-xl font-bold">Continue where you left off</h2>
-                <p className="text-gray-300 mt-1">{lastModule.title} - {lastModule.module}</p>
+                <p className="text-gray-300 mt-1">React Hooks Deep Dive - Module 4: useEffect Hook</p>
               </div>
               <button className="mt-4 md:mt-0 bg-white text-gray-900 hover:bg-gray-100 px-4 py-2 rounded-md font-medium transition-colors">
                 Resume Learning
