@@ -14,7 +14,7 @@ const ExchangeSchema = new Schema({
 const InterviewSchema = new Schema({
     title: { type: String, required: true },
     userRef: { type: Schema.Types.ObjectId, ref: 'User', required: true },
-    type: { type: String, required: true, enum: ['practice', 'ranked'] },
+    type: { type: String, required: true,default:"practice", enum: ['practice', 'ranked'] },
     jobDescribtion: { type: String },
     resumeData: { type: String },
     exchanges: [ExchangeSchema],
