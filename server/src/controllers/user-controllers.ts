@@ -479,7 +479,7 @@ export const addBadge = async (req: Request, res: Response) => {
         
         if (badge.type === "streak" && user.streak.score >= badge.requirement) meetsRequirement = true;
         if (badge.type === "quiz" && user.quizzesCompleted >= badge.requirement) meetsRequirement = true;
-        if (badge.type === "challenge" && user.challengesCompleted >= badge.requirement) meetsRequirement = true;
+        if (badge.type === "challenge" && user.interviewCompleted >= badge.requirement) meetsRequirement = true;
         
         if (meetsRequirement && !user.badges.includes(badge._id)) {
             user.badges.push(badge._id);
@@ -493,3 +493,39 @@ export const addBadge = async (req: Request, res: Response) => {
     res.status(500).json({ error: error.message });
 }
 };
+
+
+export const incrementCountQuizCompleted = async (req: Request, res: Response) => {
+  
+  try {
+      const username = res.locals.jwtData.username;
+      const user = await User.findOne({ username });
+      if (!user) {
+          return res.status(404).json({ message: 'User not found' });
+      }
+      user.quizzesCompleted += 1;
+      await user.save();
+      return res.status(200).json({ message: 'Quiz completed successfully' });
+  } catch (error) {
+      console.error(error);
+      return res.status(500).json({ message: 'Server error', cause: error.message });
+  }
+}
+
+
+export const incrementInterviewCompleted = async (req: Request, res: Response) => {
+  
+  try {
+      const username = res.locals.jwtData.username;
+      const user = await User.findOne({ username });
+      if (!user) {
+          return res.status(404).json({ message: 'User not found' });
+      }
+      user.interviewCompleted += 1;
+      await user.save();
+      return res.status(200).json({ message: 'Interview completed successfully' });
+  } catch (error) {
+      console.error(error);
+      return res.status(500).json({ message: 'Server error', cause: error.message });
+  }
+}
