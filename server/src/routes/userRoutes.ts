@@ -44,6 +44,6 @@ userRoutes.post("/createBadge", verifyToken, createBadge);
 userRoutes.get("/Badge", verifyToken, getUserBadges);
 userRoutes.get("/getAllBadges", verifyToken, getAllBadges);
 userRoutes.get("/checkBadges",verifyToken, addBadge);
-userRoutes.put("/incrementChallengesCompleted", verifyToken, incrementInterviewCompleted);
+userRoutes.put("/incrementInterviewCompleted", verifyToken, incrementInterviewCompleted);
 userRoutes.put("/incrementQuizCompleted", verifyToken, incrementCountQuizCompleted);
 export default userRoutes;
