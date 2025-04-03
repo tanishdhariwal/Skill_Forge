@@ -112,7 +112,7 @@ const initialStreakData = {
 const navItems = [
   { icon: Home, label: 'Dashboard', path: '/dashboard' },
   { icon: BookOpen, label: 'Learning', path: '/learn' },
-  { icon: BarChart3, label: 'Study Planner', path: '/studyplanner' },
+  { icon: BarChart3, label: 'Study Planner', path: '/plans' },
   { icon: Settings, label: 'Settings', path: '/settings' },
 ];
 
