@@ -13,6 +13,8 @@ import { useState } from "react";
 import { X, Menu } from "lucide-react";
 import DailyQuestion from './views/DailyQuestion';
 import CourseSelection from "./views/CourseSelection";
+import Plans from "./studyPlan/Plans.tsx";
+import FlowChart from "./studyPlan/FlowChart.tsx";
 
 // New layout for authenticated routes, placing Navbar on top
 function AuthenticatedLayout() {
@@ -57,6 +59,8 @@ function App() {
           <Route path="/learn" element={<CourseSelection />} />
           <Route path="/learn/:courseId" element={<LearningEnvironment />} />
           <Route path="/daily-question" element={<DailyQuestion />} />
+          <Route path="/plans" element={<Plans />} />
+          <Route path="/flow" element={<FlowChart />} />
         </Route>
       )}
       <Route path="*" element={<PageNotFound />} />

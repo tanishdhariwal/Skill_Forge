@@ -8,6 +8,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import Navbar from "./Navbar";
 import { useAuth } from "@/context/AuthContext";
+import { useNavigate } from "react-router-dom"; // Import useNavigate here
 
 // Mock data for development
 const userData = {
@@ -41,6 +42,17 @@ const CountUp = ({ end }: { end: number }) => {
 
 export const Profile = () => {
   const { logout } = useAuth();
+  const navigate = useNavigate(); // Use useNavigate in the component where it's needed
+
+  const handleLogout = async () => {
+    try {
+      await logout();
+      navigate('/login'); // Navigate to login page after successful logout
+    } catch (error) {
+      console.error("Logout failed:", error);
+    }
+  };
+
   return (
     <>
     {/* <Navbar /> */}
@@ -161,7 +173,7 @@ export const Profile = () => {
             <Button 
               variant="destructive" 
               className="w-full mt-6 bg-red-900 hover:bg-red-800"
-              onClick={logout}
+              onClick={handleLogout}
             >
               Logout
             </Button>
