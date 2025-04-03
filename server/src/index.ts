@@ -29,7 +29,7 @@ app.use(express.json());
 // Routes
 app.use('/api/v1/user', userRouter);
 // app.use('/api/curriculum', curriculumRoutes);
-app.use('/api/interview', interviewRouter);
+app.use('/api/v1/interview', interviewRouter);
 // app.use('/api/quiz', quizRoutes);
 app.use('/api/v1/studyplan', studyPlanRoutes);
 

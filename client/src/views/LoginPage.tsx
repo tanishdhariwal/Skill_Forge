@@ -64,7 +64,8 @@ export const LogiPage = () => {
         toast.success("Signup successful");
         navigate('/dashboard'); // Moved inside branch
       }
-      window.location.reload(); // Reload the page after login/signup
+      navigate('/dashboard'); // Moved inside branch
+      // window.location.reload(); // Reload the page after login/signup
     } catch (err: any) {
       setError(err.message);
       toast.error(err.message);
