@@ -11,6 +11,7 @@ import { useAuth } from "./context/AuthContext";
 import Navbar from "./views/Navbar";
 import { useState } from "react";
 import { X, Menu } from "lucide-react";
+import DailyQuestion from './views/DailyQuestion';
 
 // New layout for authenticated routes, placing Navbar on top
 function AuthenticatedLayout() {
@@ -50,6 +51,7 @@ function App() {
           <Route path="/profile" element={<Profile />} />
           <Route path="/analysis" element={<ViewAnalysis />} />
           <Route path="/learn" element={<LearningEnvironment />} />
+          <Route path="/daily-question" element={<DailyQuestion />} />
         </Route>
       )}
       <Route path="*" element={<PageNotFound />} />
