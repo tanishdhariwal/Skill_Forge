@@ -16,7 +16,7 @@ import { setupMatchmaking } from './matchMaking.js';
 dotenv.config();
 
 const app = express();
-const PORT = process.env.PORT || 5000;
+const PORT = parseInt(process.env.PORT || '5000', 10);
 
 connectDB();
 
@@ -42,3 +42,8 @@ setupMatchmaking(io);
 server.listen(4000, "0.0.0.0", () => {
   console.log(`Server running on port 4000`);
 });
+
+app.listen(PORT, "0.0.0.0", () => {
+  console.log(`Server running on port 4000`);
+});
+
