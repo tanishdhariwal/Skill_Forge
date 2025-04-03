@@ -1,5 +1,5 @@
 import "./App.css";
-import { Routes, Route, Outlet } from "react-router-dom";
+import { Routes, Route, Outlet, Navigate } from "react-router-dom";
 import { LandingPage } from "./views/LandingPage";
 import { LoginPage } from "./views/LoginPage";
 import { PageNotFound } from "./views/PageNotFound";
@@ -45,7 +45,10 @@ function App() {
   return (
     <Routes>
       <Route path="/" element={<LandingPage />} />
-      {!isLoggedIn && <Route path="/login" element={<LoginPage />} />}
+      <Route 
+        path="/login" 
+        element={isLoggedIn ? <Navigate to="/dashboard" replace /> : <LoginPage />} 
+      />
       {isLoggedIn && (
         <Route element={<AuthenticatedLayout />}>
           <Route path="/dashboard" element={<Dashboard />} />
