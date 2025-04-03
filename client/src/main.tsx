@@ -3,20 +3,18 @@ import { createRoot } from "react-dom/client";
 import "./index.css";
 import { ThemeProvider } from "@/components/theme-provider";
 import App from "./App.tsx";
-import {BrowserRouter } from 'react-router-dom'
-import { Toaster } from 'react-hot-toast'
+import { BrowserRouter } from "react-router-dom";
+import { Toaster } from "react-hot-toast";
 import axios from "axios";
-
+import ClickSpark from "./components/ClickSpark.tsx";
 axios.defaults.baseURL = "http://localhost:5000/api/v1";
 axios.defaults.withCredentials = true;
 
-
-
 createRoot(document.getElementById("root")!).render(
   <StrictMode>
-    <ThemeProvider defaultTheme="dark" storageKey="vite-ui-theme" >
+    <ThemeProvider defaultTheme="dark" storageKey="vite-ui-theme">
       <BrowserRouter>
-      <Toaster
+        <Toaster
           position="top-center"
           toastOptions={{
             duration: 3500, // Slightly longer duration for better user attention
@@ -36,7 +34,17 @@ createRoot(document.getElementById("root")!).render(
             },
           }}
         />
-      <App />
+
+        <ClickSpark
+          sparkColor="#fff"
+          sparkSize={10}
+          sparkRadius={15}
+          sparkCount={8}
+          duration={400}
+        >
+          {/* Your content here */}
+          <App />
+        </ClickSpark>
       </BrowserRouter>
     </ThemeProvider>
   </StrictMode>

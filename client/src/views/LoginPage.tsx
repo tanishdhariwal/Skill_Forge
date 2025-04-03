@@ -29,7 +29,7 @@ const formVariants = {
   }
 };
 
-export const AuthPage = () => {
+export const LogiPage = () => {
   const navigate = useNavigate();
   const [isLogin, setIsLogin] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
