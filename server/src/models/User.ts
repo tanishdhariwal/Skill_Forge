@@ -71,7 +71,7 @@ const userSchema = new Schema({
         default: 0
     },
     quizzesCompleted: { type: Number, default: 0 },
-    challengesCompleted: { type: Number, default: 0 }
+    interviewCompleted: { type: Number, default: 0 }
 
 }, { timestamps: true });
 
