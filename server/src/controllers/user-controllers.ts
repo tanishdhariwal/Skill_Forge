@@ -346,10 +346,37 @@ export const getDashboardData = async (req: Request, res: Response) => {
           lastMonth: streakCalendar.filter(day => new Date(day.date).getMonth() === new Date().getMonth() - 1).length,
           streakCalendar,
       };
+      const userdata = {
+          username: user.username,
+          level: user.level,
+          exp: user.exp
+      }
 
-      return res.json({ interviewHistory, streakData });
+      return res.json({ userdata,interviewHistory, streakData });
   } catch (error) {
       console.error("Error fetching dashboard data:", error);
       return res.status(500).json({ message: "Internal Server Error" });
+  }
+};
+
+
+export const addExp = async (req: Request, res: Response) => {
+  try {
+      const username = res.locals.jwtData.username;
+      // const { exp } = req.body;
+      const user = await User.findOne({ username });
+      if (!user) {
+          return res.status(404).json({ message: 'User not found' });
+      }
+      user.exp += 10;
+      if(user.exp >= 100) {
+          user.level += 1;
+          user.exp = 0;
+      }
+      await user.save();
+      return res.status(200).json({ message: 'Exp added successfully' });
+  } catch (error) {
+      console.error(error);
+      return res.status(500).json({ message: 'Server error', cause: error.message });
   }
 };

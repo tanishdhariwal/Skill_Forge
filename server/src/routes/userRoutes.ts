@@ -8,7 +8,8 @@ import {   userSignup,
     getDailyActivity,
     updateDailyActivity, updatePassword,
     streakUpdate,
-    getDashboardData} from "../controllers/user-controllers.js";
+    getDashboardData,
+    addExp} from "../controllers/user-controllers.js";
 import {
   loginValidator,
   registerValidator,
@@ -29,6 +30,6 @@ userRoutes.get("/daily-activity", verifyToken, getDailyActivity);
 userRoutes.put("/daily-activity", verifyToken, updateDailyActivity);
 userRoutes.get("/updateStreak", verifyToken, streakUpdate);
 userRoutes.post("/updatePassword", verifyToken, updatePassword);
-userRoutes.post("/dashboard", verifyToken, getDashboardData);
-
+userRoutes.get("/profile", verifyToken, getDashboardData);
+userRoutes.put("/addExp", verifyToken, addExp);
 export default userRoutes;
