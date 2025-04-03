@@ -318,9 +318,10 @@ const Dashboard = () => {
                 </div>
                 <div className="space-y-4">
                   {mockInterviewHistory.map((interview) => (
-                    <div 
+                    <Link 
                       key={interview.id}
-                      className="bg-gray-800 p-4 rounded-lg hover:bg-gray-650 transition-colors cursor-pointer"
+                      to={`/analysis`}
+                      className="bg-gray-800 p-4 rounded-lg hover:bg-gray-650 transition-colors cursor-pointer block"
                     >
                       <div className="flex justify-between items-start">
                         <div>
@@ -337,7 +338,7 @@ const Dashboard = () => {
                           </div>
                         </div>
                       </div>
-                    </div>
+                    </Link>
                   ))}
                 </div>
               </motion.div>
