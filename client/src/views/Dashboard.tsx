@@ -14,7 +14,11 @@ import {
   Clock, 
   CheckCircle2,
   AlertCircle,
-  Flame
+  Flame,
+  Code,
+  Database,
+  Server,
+  Layers
 } from 'lucide-react';
 import Navbar from './Navbar';
 
@@ -32,6 +36,22 @@ const itemVariants = {
   visible: { y: 0, opacity: 1 }
 };
 
+// Category to icon mapping
+const categoryIcons = {
+  Frontend: Code,
+  Backend: Server,
+  Language: Layers,
+  Database: Database
+};
+
+// Category to color mapping
+const categoryColors = {
+  Frontend: 'bg-blue-500',
+  Backend: 'bg-green-500',
+  Language: 'bg-yellow-500',
+  Database: 'bg-purple-500'
+};
+
 // Mock data for the dashboard
 const mockInterviewHistory = [
   { id: 1, title: 'JavaScript Fundamentals', date: '2023-10-15', score: 85, status: 'Completed' },
@@ -40,10 +60,32 @@ const mockInterviewHistory = [
   { id: 4, title: 'System Design Basics', date: '2023-10-05', score: 65, status: 'Needs Improvement' }
 ];
 
+// Enhanced learning topics with additional fields
 const mockLearningTopics = [
-  { id: 1, title: 'React Fundamentals', progress: 75, category: 'Frontend' },
-  { id: 2, title: 'TypeScript Basics', progress: 50, category: 'Language' },
-  { id: 3, title: 'Node.js API Development', progress: 30, category: 'Backend' }
+  { 
+    id: 1, 
+    title: 'React Fundamentals', 
+    progress: 75, 
+    category: 'Frontend', 
+    difficulty: 'Intermediate',
+    description: 'Building components and managing state'
+  },
+  { 
+    id: 2, 
+    title: 'TypeScript Basics', 
+    progress: 50, 
+    category: 'Language', 
+    difficulty: 'Beginner',
+    description: 'Type systems and interfaces'
+  },
+  { 
+    id: 3, 
+    title: 'Node.js API Development', 
+    progress: 30, 
+    category: 'Backend', 
+    difficulty: 'Advanced',
+    description: 'RESTful services with Express'
+  }
 ];
 
 const mockStreakData = {
@@ -73,15 +115,15 @@ const mockStreakData = {
 // Navigation items - Schedule removed
 const navItems = [
   { icon: Home, label: 'Dashboard', path: '/dashboard' },
-  { icon: BookOpen, label: 'Learning', path: '/learning' },
+  { icon: BookOpen, label: 'Learning', path: '/learn' },
   { icon: BarChart3, label: 'Progress', path: '/progress' },
   { icon: Settings, label: 'Settings', path: '/settings' },
 ];
 
 const Dashboard = () => {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
-  const username = "John Doe"; // Hardcoded user
-  const userPoints = 350; // Hardcoded points for navbar
+  const username = "Ramesh Rao"; // Hardcoded user
+//   const userPoints = 350; // Hardcoded points for navbar
 
   // Function to generate calendar grid
   const generateCalendarGrid = () => {
@@ -113,7 +155,7 @@ const Dashboard = () => {
   return (
     <div className="min-h-screen bg-gray-950 text-gray-100">
       {/* Navbar - Added at top */}
-      <Navbar username={username} points={userPoints} />
+      <Navbar />
 
       {/* Mobile Navigation Toggle */}
       <div className="md:hidden fixed top-4 right-4 z-50">
@@ -189,7 +231,7 @@ const Dashboard = () => {
           <motion.div variants={itemVariants} className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
             {[
               { label: 'Current Streak', value: `${mockStreakData.currentStreak} days`, icon: Flame, color: 'text-orange-500' },
-              { label: 'Sessions Completed', value: '42', icon: CheckCircle2, color: 'text-green-500' },
+            //   { label: 'Sessions Completed', value: '42', icon: CheckCircle2, color: 'text-green-500' },
               { label: 'Avg. Score', value: '82%', icon: BarChart3, color: 'text-blue-500' },
               { label: 'Time Invested', value: '86 hours', icon: Clock, color: 'text-purple-500' }
             ].map((stat, index) => (
@@ -214,41 +256,60 @@ const Dashboard = () => {
             {/* Left Column */}
             <div className="xl:col-span-2 space-y-8">
               {/* Current Learning Topics - Now first */}
-              <motion.div variants={itemVariants} className="bg-gray-800 rounded-lg p-6">
+              <motion.div variants={itemVariants} className="bg-gray-900 rounded-lg p-6">
                 <div className="flex justify-between items-center mb-6">
                   <h2 className="text-xl font-bold">Current Learning Topics</h2>
                   <Link to="/learning" className="text-blue-400 hover:text-blue-300 text-sm flex items-center">
                     All Topics <ChevronRight className="h-4 w-4 ml-1" />
                   </Link>
                 </div>
-                <div className="space-y-4">
-                  {mockLearningTopics.map((topic) => (
-                    <div 
-                      key={topic.id}
-                      className="bg-gray-700 p-4 rounded-lg hover:bg-gray-650 transition-colors cursor-pointer"
-                    >
-                      <div className="flex justify-between items-start">
-                        <div>
-                          <h3 className="font-medium">{topic.title}</h3>
-                          <p className="text-sm text-gray-400">{topic.category}</p>
-                        </div>
-                        <div className="flex items-center">
-                          <span className="text-sm mr-2">{topic.progress}%</span>
+                <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4">
+                  {mockLearningTopics.map((topic) => {
+                    const progressColor = categoryColors[topic.category as keyof typeof categoryColors] || 'bg-blue-500';
+                    
+                    return (
+                      <div 
+                        key={topic.id}
+                        className="bg-gray-800 p-5 rounded-lg hover:bg-gray-750 transition-colors cursor-pointer shadow-md"
+                        style={{ width: '100%', minHeight: '160px' }}
+                      >
+                        <div className="flex flex-col h-full">
+                          <div className="mb-3">
+                            <div className="flex justify-between items-center">
+                              <span className={`px-2 py-0.5 rounded-md text-xs ${progressColor.replace('bg-', 'bg-opacity-20 text-')}`}>
+                                {topic.category}
+                              </span>
+                              <span className="text-xs text-gray-400">{topic.difficulty}</span>
+                            </div>
+                            <h3 className="text-lg font-medium mt-2">{topic.title}</h3>
+                          </div>
+                          
+                          <div className="mt-auto">
+                            <div className="flex justify-between items-center mb-1.5">
+                              <span className="text-xs text-gray-400">Progress</span>
+                              <span className="text-sm font-medium">{topic.progress}%</span>
+                            </div>
+                            
+                            <div className="h-2 bg-gray-700 rounded-full overflow-hidden">
+                              <div 
+                                className={`${progressColor} h-full`} 
+                                style={{ width: `${topic.progress}%` }}
+                              ></div>
+                            </div>
+                            
+                            <p className="text-sm text-gray-400 mt-2.5">
+                              {topic.description}
+                            </p>
+                          </div>
                         </div>
                       </div>
-                      <div className="mt-2 h-2 bg-gray-600 rounded-full overflow-hidden">
-                        <div 
-                          className="bg-blue-500 h-full" 
-                          style={{ width: `${topic.progress}%` }}
-                        ></div>
-                      </div>
-                    </div>
-                  ))}
+                    );
+                  })}
                 </div>
               </motion.div>
 
               {/* Interview History - Now second */}
-              <motion.div variants={itemVariants} className="bg-gray-800 rounded-lg p-6">
+              <motion.div variants={itemVariants} className="bg-gray-900 rounded-lg p-6">
                 <div className="flex justify-between items-center mb-6">
                   <h2 className="text-xl font-bold">Recent Interview Practice</h2>
                   <Link to="/history" className="text-blue-400 hover:text-blue-300 text-sm flex items-center">
@@ -257,9 +318,10 @@ const Dashboard = () => {
                 </div>
                 <div className="space-y-4">
                   {mockInterviewHistory.map((interview) => (
-                    <div 
+                    <Link 
                       key={interview.id}
-                      className="bg-gray-700 p-4 rounded-lg hover:bg-gray-650 transition-colors cursor-pointer"
+                      to={`/analysis`}
+                      className="bg-gray-800 p-4 rounded-lg hover:bg-gray-650 transition-colors cursor-pointer block"
                     >
                       <div className="flex justify-between items-start">
                         <div>
@@ -276,7 +338,7 @@ const Dashboard = () => {
                           </div>
                         </div>
                       </div>
-                    </div>
+                    </Link>
                   ))}
                 </div>
               </motion.div>
@@ -285,7 +347,7 @@ const Dashboard = () => {
             {/* Right Column - Keep the streak calendar */}
             <div className="space-y-8">
               {/* Streak Calendar */}
-              <motion.div variants={itemVariants} className="bg-gray-800 rounded-lg p-6">
+              <motion.div variants={itemVariants} className="bg-gray-900 rounded-lg p-6">
                 <h2 className="text-xl font-bold mb-4">Your Learning Streak</h2>
                 
                 <div className="flex justify-between mb-6">
@@ -332,11 +394,11 @@ const Dashboard = () => {
               </motion.div>
 
               {/* Recommended Learning Paths - Keep */}
-              <motion.div variants={itemVariants} className="bg-gray-800 rounded-lg p-6">
+              <motion.div variants={itemVariants} className="bg-gray-900 rounded-lg p-6">
                 <h2 className="text-xl font-bold mb-4">Recommended Learning Paths</h2>
                 <div className="space-y-4">
                   {/* Keep existing recommended learning paths code */}
-                  <div className="bg-gray-700 p-4 rounded-lg hover:bg-gray-650 transition-colors cursor-pointer">
+                  <div className="bg-gray-800 p-4 rounded-lg hover:bg-gray-650 transition-colors cursor-pointer">
                     <h3 className="font-medium">Frontend Developer Track</h3>
                     <div className="flex text-xs text-gray-400 mt-1">
                       <span>Intermediate</span>
@@ -349,7 +411,7 @@ const Dashboard = () => {
                       Start Learning
                     </button>
                   </div>
-                  <div className="bg-gray-700 p-4 rounded-lg hover:bg-gray-650 transition-colors cursor-pointer">
+                  <div className="bg-gray-800 p-4 rounded-lg hover:bg-gray-650 transition-colors cursor-pointer">
                     <h3 className="font-medium">Algorithms Mastery</h3>
                     <div className="flex text-xs text-gray-400 mt-1">
                       <span>Advanced</span>
