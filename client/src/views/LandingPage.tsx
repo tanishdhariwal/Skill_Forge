@@ -4,6 +4,7 @@ import { Link } from "react-router-dom";
 import { ChevronRight } from "lucide-react";
 import PixelCard from "../components/HoverCard";
 import Aurora from "../components/Aurora";
+import TrueFocus from "../components/TrueFocus";
 
 // Hero section animations
 const containerVariants = {
@@ -96,19 +97,26 @@ export const LandingPage = () => {
             initial="hidden"
             animate="visible"
           >
-            <motion.h1
-              className="text-5xl md:text-6xl lg:text-7xl font-bold mb-6 text-white"
+            <motion.div
               variants={itemVariants}
+              className="mb-6"
             >
-              Master Your Next <br />
-              Technical Interview
-            </motion.h1>
+              <TrueFocus 
+                sentence="Enter The New Learning Era"
+                manualMode={true}
+                blurAmount={4}
+                borderColor="#1EB0A4"
+                glowColor="rgba(255, 85, 85, 0.6)"
+                animationDuration={0.8}
+                pauseBetweenAnimations={1}
+              />
+            </motion.div>
 
             <motion.p
               className="text-xl md:text-2xl mb-8 text-white/90"
               variants={itemVariants}
             >
-              Practice with AI-powered feedback and expert guidance
+              Learn with AI-powered feedback and expert guidance
             </motion.p>
 
             <motion.div variants={itemVariants} className="space-x-4">
@@ -194,7 +202,7 @@ export const LandingPage = () => {
               Ready to Level Up?
             </h2>
             <p className="text-xl text-white/80 mb-8">
-              Join thousands of successful candidates
+              Join thousands of students, Grow with us!
             </p>
             <Link
               to="/login"
