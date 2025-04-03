@@ -115,7 +115,7 @@ const mockStreakData = {
 // Navigation items - Schedule removed
 const navItems = [
   { icon: Home, label: 'Dashboard', path: '/dashboard' },
-  { icon: BookOpen, label: 'Learning', path: '/learning' },
+  { icon: BookOpen, label: 'Learning', path: '/learn' },
   { icon: BarChart3, label: 'Progress', path: '/progress' },
   { icon: Settings, label: 'Settings', path: '/settings' },
 ];
