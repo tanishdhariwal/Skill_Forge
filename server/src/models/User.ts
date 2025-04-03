@@ -37,6 +37,16 @@ const userSchema = new Schema({
         type: String,
         required: true
     },
+    level: {
+        type: Number,
+        default: 1,
+        required: true
+    },
+    exp: {
+        type: Number,
+        default: 0,
+        required: true
+    },
     
     resume: { type: String, default: "" },
     profilePic: { type: String, default: "" },

@@ -2,13 +2,13 @@
 import express from 'express';
 import cors from 'cors';
 import dotenv from 'dotenv';
-import { connectToDB } from './config/db';
+import { connectToDB } from './config/db.js';
 // import curriculumRoutes from './routes/curriculumRoutes';
 // import mockInterviewRoutes from './routes/mockInterviewRoutes';
 // import quizRoutes from './routes/quizRoutes';
 // import roadmapRoutes from './routes/roadmapRoutes';
-import userRouter from './routes/userRoutes';
-import errorHandler from './middlewares/errorHandler';
+import userRouter from './routes/userRoutes.js';
+import errorHandler from './middlewares/errorHandler.js';
 
 dotenv.config();
 
