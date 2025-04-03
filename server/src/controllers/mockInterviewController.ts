@@ -13,7 +13,7 @@ export const startInterview = async (req: Request, res: Response) => {
         return res.status(404).json({ message: "User not found" });
     }
 
-    const resume = "Kst this is part of devlopment leave it , get resume data implitment rag and send to the ai";
+    const resume = "Basic resume data"; // Placeholder for resume data
     
     const question = generateQuestion(jobDescription, jobRole, experience, resume);
     const interview = new Interview({
@@ -49,7 +49,7 @@ export const genrateNextQuestion = async (req: Request, res: Response) => {
     }
     const lastExchange = interview.exchanges[interview.exchanges.length - 1];
     lastExchange.answer = answer;
-    const { feedback, marks } = getFeedback(lastExchange);
+    const { feedback, marks } =await getFeedback(lastExchange);
     lastExchange.exchangeFeedback = feedback;
     lastExchange.marks = marks;
     const { jobDescribtion, jobRole, experience, resumeData } = interview;
@@ -79,14 +79,12 @@ export const submitInterview = async (req: Request, res: Response) => {
             }
             const lastExchange = interview.exchanges[interview.exchanges.length - 1];
             lastExchange.answer = answer;
-            const { feedback, marks } = getFeedback(lastExchange);
+            const { feedback, marks } =await getFeedback(lastExchange);
             lastExchange.exchangeFeedback = feedback;
             lastExchange.marks = marks;
             const { jobDescribtion, jobRole, experience, resumeData } = interview;
-            const {feedback: interviewfeedback, strengths, weaknesses} = getFinalFeedback(jobDescribtion, jobRole, resumeData,interview.exchanges);
+            const interviewfeedback =await getFinalFeedback(jobDescribtion, jobRole, resumeData,interview.exchanges);
             interview.interviewfeedback = interviewfeedback;
-            interview.strengths = strengths;
-            interview.weaknesses.push({weaknesses});
             interview.status = "complete";
             await interview.save();
             return res.status(200).json({ message: "OK",interview_id:id});
@@ -127,6 +125,26 @@ export const getAllInterviews = async (req: Request, res: Response) => {
         return res.status(200).json({ message: "OK", interviews });
     }
     catch (error) {
+        console.log(error);
+        return res.status(500).json({ message: "Internal Server Error" });
+    }
+}
+
+
+export const getInterviewData = async (req: Request, res: Response) => {
+    try {
+        const interview_id = req.params.interview_id;
+        const username = res.locals.jwtData.username;
+        const user = await User.findOne({ username });
+        if (!user) {
+            return res.status(404).json({ message: "User not found" });
+        }
+        const interview = await Interview.findOne({interview_id,userRef: user._id});
+        if (!interview) {
+        return res.status(404).json({ message: "Interview not found" });
+        }
+        return res.status(200).json({ message: "OK",interview});
+    } catch (error) {
         console.log(error);
         return res.status(500).json({ message: "Internal Server Error" });
     }
