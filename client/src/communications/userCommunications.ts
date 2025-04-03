@@ -77,8 +77,6 @@ export const logoutUser = async () => {
     if(response.status === 200 ) {
       toast.success("User logged out");
     }
-    const navigate = useNavigate();
-    navigate('/');
     return response.data;
   } catch (error: any) {
     // toast.error(error.response?.data?.message || "Logout failed");
@@ -98,6 +96,17 @@ export const checkAuthStatus = async () => {
     const response = await axios.get('/user/auth-status');
     return response.data;
   } catch (error: any) {
+    throw error;
+  }
+};
+
+
+export const fetchDashboardData = async () => {
+  try {
+    const response = await axios.get('/user/dashboard');
+    return response.data;
+  } catch (error) {
+    toast.error('Failed to fetch dashboard data');
     throw error;
   }
 };

@@ -14,6 +14,9 @@ import {
   Settings
 } from 'lucide-react';
 import { Link } from 'react-router-dom';
+import { useState, useEffect } from 'react';
+import axios from 'axios';
+import { fetchDashboardData } from '../communications/userCommunications';
 
 // Animation variants
 const containerVariants = {
@@ -81,7 +84,7 @@ const mockLearningTopics = [
   }
 ];
 
-const mockStreakData = {
+const initialStreakData = {
   currentStreak: 15,
   longestStreak: 28,
   thisMonth: 22,
@@ -90,13 +93,13 @@ const mockStreakData = {
     { date: '2023-10-01', completed: true },
     { date: '2023-10-02', completed: true },
     { date: '2023-10-03', completed: true },
-    { date: '2023-10-04', completed: true },
+    { date: '2023-10-04', completed: false },
     { date: '2023-10-05', completed: true },
     { date: '2023-10-06', completed: false },
     { date: '2023-10-07', completed: true },
-    { date: '2023-10-08', completed: true },
+    { date: '2023-10-08', completed: false },
     { date: '2023-10-09', completed: true },
-    { date: '2023-10-10', completed: true },
+    { date: '2023-10-10', completed: false },
     { date: '2023-10-11', completed: true },
     { date: '2023-10-12', completed: true },
     { date: '2023-10-13', completed: true },
@@ -114,11 +117,48 @@ const navItems = [
 ];
 
 const Dashboard = () => {
-  // Removed: const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
-  // Uncomment below if the mobile state is needed within Dashboard:
-  // const { mobileMenuOpen, setMobileMenuOpen } = useOutletContext<{ mobileMenuOpen: boolean; setMobileMenuOpen: React.Dispatch<React.SetStateAction<boolean>> }>();
+  // Define initial state with mock data
+  const [dashboardData, setDashboardData] = useState({
+    userdata: {
+      username: "Ramesh Rao",
+      level: 1,
+      exp: 0
+    },
+    interviewHistory: mockInterviewHistory,
+    learningTopics: mockLearningTopics,
+    streakData: initialStreakData,
+    lastModule: {
+      title: "React Hooks Deep Dive",
+      module: "Module 4: useEffect Hook"
+    }
+  });
   
-  const username = "Ramesh Rao"; // Hardcoded user
+  // Fetch dashboard data on component mount
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const response = await fetchDashboardData();
+        if (response) {
+          setDashboardData(prevData => ({
+            userdata: response.userdata || prevData.userdata,
+            interviewHistory: response.interviewHistory?.length ? response.interviewHistory : prevData.interviewHistory,
+            learningTopics: response.learningTopics?.length ? response.learningTopics : prevData.learningTopics,
+            streakData: response.streakData || prevData.streakData,
+            lastModule: response.lastModule || prevData.lastModule
+          }));
+        }
+      } catch (error) {
+        console.error('Failed to fetch dashboard data:', error);
+        // Keep using the mock data which is already set as initial state
+      }
+    };
+
+    fetchData();
+  }, []);
+
+  // Extract data from state
+  const { userdata, interviewHistory, learningTopics, streakData, lastModule } = dashboardData;
+  const username = userdata.username;
 
   // Function to generate calendar grid
   const generateCalendarGrid = () => {
@@ -132,7 +172,7 @@ const Dashboard = () => {
       
       // Find if this day has a streak
       const dateString = date.toISOString().split('T')[0];
-      const streakDay = mockStreakData.streakCalendar.find(day => day.date === dateString);
+      const streakDay = streakData.streakCalendar.find(day => day.date === dateString);
       
       calendarDays.push({
         date: dateString,
@@ -146,6 +186,10 @@ const Dashboard = () => {
   };
 
   const calendarDays = generateCalendarGrid();
+
+  function updateStreak(event: React.MouseEvent<HTMLButtonElement, MouseEvent>): void {
+    throw new Error('Function not implemented.');
+  }
 
   return (
     <div className="min-h-screen bg-gray-950 text-gray-100">
@@ -207,8 +251,8 @@ const Dashboard = () => {
           {/* Stats Summary */}
           <motion.div variants={itemVariants} className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
             {[
-              { label: 'Current Streak', value: `${mockStreakData.currentStreak} days`, icon: Flame, color: 'text-orange-500' },
-              { label: 'Avg. Score', value: '82%', icon: BarChart3, color: 'text-blue-500' },
+              { label: 'Current Streak', value: `${streakData.currentStreak} days`, icon: Flame, color: 'text-orange-500' },
+              { label: 'Level', value: `${userdata.level}`, icon: BarChart3, color: 'text-blue-500' },
               { label: 'Time Invested', value: '86 hours', icon: Clock, color: 'text-purple-500' }
             ].map((stat, index) => (
               <motion.div
@@ -240,7 +284,7 @@ const Dashboard = () => {
                   </Link>
                 </div>
                 <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4">
-                  {mockLearningTopics.map((topic) => {
+                  {learningTopics.map((topic) => {
                     const progressColor = categoryColors[topic.category as keyof typeof categoryColors] || 'bg-blue-500';
                     
                     return (
@@ -293,7 +337,7 @@ const Dashboard = () => {
                   </Link>
                 </div>
                 <div className="space-y-4">
-                  {mockInterviewHistory.map((interview) => (
+                  {interviewHistory.map((interview) => (
                     <Link 
                       key={interview.id}
                       to={`/analysis`}
@@ -328,24 +372,27 @@ const Dashboard = () => {
                 
                 <div className="flex justify-between mb-6">
                   <div className="text-center">
-                    <div className="text-orange-500">
-                      <Flame className="h-6 w-6 mx-auto" />
-                    </div>
-                    <p className="text-2xl font-bold">{mockStreakData.currentStreak}</p>
+                    {/* Wrap the flame icon in a button to update the streak */}
+                    <button onClick={updateStreak} className="focus:outline-none">
+                      <div className="text-orange-500">
+                        <Flame className="h-6 w-6 mx-auto" />
+                      </div>
+                    </button>
+                    <p className="text-2xl font-bold">{streakData.currentStreak}</p>
                     <p className="text-xs text-gray-400">Current Streak</p>
                   </div>
                   <div className="text-center">
                     <div className="text-orange-500">
                       <Flame className="h-6 w-6 mx-auto" />
                     </div>
-                    <p className="text-2xl font-bold">{mockStreakData.longestStreak}</p>
+                    <p className="text-2xl font-bold">{streakData.longestStreak}</p>
                     <p className="text-xs text-gray-400">Longest Streak</p>
                   </div>
                   <div className="text-center">
                     <div className="text-green-500">
                       <BookOpen className="h-6 w-6 mx-auto" />
                     </div>
-                    <p className="text-2xl font-bold">{mockStreakData.thisMonth}</p>
+                    <p className="text-2xl font-bold">{streakData.thisMonth}</p>
                     <p className="text-xs text-gray-400">This Month</p>
                   </div>
                 </div>
@@ -353,21 +400,28 @@ const Dashboard = () => {
                 <div className="mt-4">
                   <div className="text-sm text-gray-400 mb-2">Last 30 Days</div>
                   <div className="grid grid-cols-7 gap-1">
-                    {calendarDays.map((day, i) => (
-                      <div 
-                        key={i} 
-                        className={`relative aspect-square rounded-sm flex items-center justify-center text-xs ${
-                          day.completed === true 
-                            ? 'bg-orange-500/50 text-orange-100' 
-                            : 'bg-gray-700/50 text-gray-400'
-                        }`}
-                      >
-                        {day.day}
-                        {day.completed && (
-                          <span className="absolute top-0.5 right-0.5 h-1.5 w-1.5 bg-green-400 rounded-full"></span>
-                        )}
-                      </div>
-                    ))}
+                    {calendarDays.map((day, i) => {
+                      // Simplified color assignment based directly on completion status
+                      let colorClass = "bg-gray-700/50 text-gray-400"; // default for days without data
+                      
+                      if (day.completed === true) {
+                        colorClass = "bg-blue-600/50 text-blue-100"; // completed day - true
+                      } else if (day.completed === false) {
+                        colorClass = "bg-orange-600/50 text-orange-100"; // missed day - false
+                      }
+                      
+                      return (
+                        <div 
+                          key={i} 
+                          className={`relative aspect-square rounded-sm flex items-center justify-center text-xs ${colorClass}`}
+                        >
+                          {day.day}
+                          {day.completed && (
+                            <span className="absolute top-0.5 right-0.5 h-1.5 w-1.5 bg-white rounded-full"></span>
+                          )}
+                        </div>
+                      );
+                    })}
                   </div>
                 </div>
               </motion.div>
@@ -413,7 +467,7 @@ const Dashboard = () => {
             <div className="flex flex-col md:flex-row md:items-center justify-between">
               <div>
                 <h2 className="text-xl font-bold">Continue where you left off</h2>
-                <p className="text-gray-300 mt-1">React Hooks Deep Dive - Module 4: useEffect Hook</p>
+                <p className="text-gray-300 mt-1">{lastModule.title} - {lastModule.module}</p>
               </div>
               <button className="mt-4 md:mt-0 bg-white text-gray-900 hover:bg-gray-100 px-4 py-2 rounded-md font-medium transition-colors">
                 Resume Learning

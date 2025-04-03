@@ -1,10 +1,28 @@
 import { Link } from 'react-router-dom';
 import { Flame, User } from 'lucide-react';
+import { useState, useEffect } from 'react';
+import axios from 'axios';
 
 const Navbar = () => {
-  // Hardcoded values instead of props
-  const points = 350;
-  
+  // Removed hardcoded points; now use state:
+  const [points, setPoints] = useState<number>(1);
+
+  // NEW: Function to fetch points from API
+  const fetchPoints = async () => {
+    try {
+      const response = await axios.get('/user/updateStreak');
+      console.log(response.data); // Log the response for debugging
+      // Assuming API returns { points: number }
+      setPoints(response.data.longestStreak); // Update points with the longest streak
+    } catch (error) {
+      console.error('Error updating points:', error);
+    }
+  };
+
+  useEffect(() => {
+    fetchPoints();
+  }, []);
+
   return (
     <nav className="fixed top-0 w-full z-50 bg-gray-900 border-b border-gray-800 py-4 px-6 flex items-center justify-between">
       {/* Logo on left */}

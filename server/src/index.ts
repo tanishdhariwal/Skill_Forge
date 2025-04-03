@@ -14,18 +14,19 @@ import cookieParser from 'cookie-parser';
 import studyPlanRoutes from './routes/roadmapRoutes.js';
 import interviewRouter from './routes/mockInterviewRoutes.js';
 import quizRoutes from './routes/quizRoutes.js';
-
+import { config } from 'dotenv';
 dotenv.config();
+
 const app = express();
 const PORT = process.env.PORT || 5000;
 
-app.use(cookieParser(process.env.COOKIE_SECRET));
 // Connect to MongoDB
 connectDB();
 
 // Middleware
 app.use(cors({origin:true,credentials:true}));
 app.use(express.json());
+app.use(cookieParser(process.env.COOKIE_SECRET));
 
 // Routes
 app.use('/api/v1/user', userRouter);
