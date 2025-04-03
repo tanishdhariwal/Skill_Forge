@@ -8,4 +8,6 @@ const MCQuestionSchema = new mongoose.Schema({
     date: String,
   });
 
-module.exports = mongoose.model("MCQuestion", MCQuestionSchema);
+const MCQuestionDaily = mongoose.model("MCQuestionDaily", MCQuestionSchema);
+const MCQuestion = mongoose.model("MCQuestion", MCQuestionSchema);
+export {MCQuestionDaily, MCQuestion};

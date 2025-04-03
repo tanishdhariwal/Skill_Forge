@@ -13,6 +13,7 @@ import connectDB from './config/db.js';
 import cookieParser from 'cookie-parser';
 import studyPlanRoutes from './routes/roadmapRoutes.js';
 import interviewRouter from './routes/mockInterviewRoutes.js';
+import quizRoutes from './routes/quizRoutes.js';
 
 dotenv.config();
 const app = express();
@@ -30,7 +31,7 @@ app.use(express.json());
 app.use('/api/v1/user', userRouter);
 // app.use('/api/curriculum', curriculumRoutes);
 app.use('/api/v1/interview', interviewRouter);
-// app.use('/api/quiz', quizRoutes);
+app.use('/api/v1/quiz', quizRoutes);
 app.use('/api/v1/studyplan', studyPlanRoutes);
 
 // Error handling middleware
