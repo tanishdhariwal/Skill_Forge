@@ -61,18 +61,18 @@ export function Sidebar({ activeContent, setActiveContent }: SidebarProps) {
                 whileHover={{ x: 4 }}
                 whileTap={{ scale: 0.98 }}
               >
-                {isActive && item.id === "video" && (
+                {isActive && (
                   <motion.div
                     layoutId="sidebar-active-bg"
                     className="absolute inset-0 rounded-lg bg-orange-500/20"
-                    style={{
-                      background:
-                        "repeating-linear-gradient(45deg, rgba(249, 115, 22, 0.2), rgba(249, 115, 22, 0.2) 5px, rgba(249, 115, 22, 0.3) 5px, rgba(249, 115, 22, 0.3) 10px)",
-                    }}
+                    // style={{
+                    //   background:
+                    //     "repeating-linear-gradient(45deg, rgba(11, 52, 235, 0.2),10px)",
+                    // }}
                     transition={{ type: "spring", stiffness: 380, damping: 30 }}
                   />
                 )}
-                {isActive && item.id !== "video" && (
+                {isActive  && (
                   <motion.div
                     layoutId="sidebar-active-bg"
                     className="absolute inset-0 rounded-lg bg-gray-800"

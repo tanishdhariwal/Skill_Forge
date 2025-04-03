@@ -17,7 +17,8 @@ function LearningEnvironment() {
   return (
     <div className="flex h-screen flex-col bg-gradient-to-br from-gray-950 via-gray-900 to-gray-950">
       <Navbar />
-      <div className="flex flex-1 overflow-hidden">
+      <div className="flex flex-1  pt-16 overflow-hidden">
+
         <Sidebar activeContent={activeContent} setActiveContent={setActiveContent} />
         <main className="flex-1 overflow-auto p-6">
           <AnimatePresence mode="wait">
