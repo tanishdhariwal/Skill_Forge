@@ -5,6 +5,7 @@
   "main": "index.ts",
   "type": "module",
   "scripts": {
+    "postinstall13243": "if [ \"$NODE_ENV\" != \"production\" ]; then npm run build; fi",
     "dev": "concurrently \"npx tsc --watch\" \"nodemon -q dist/index.js\"",
     "start": "cross-env NODE_ENV=production node dist/index.js",
     "build": "tsc"

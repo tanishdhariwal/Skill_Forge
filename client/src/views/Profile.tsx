@@ -6,6 +6,7 @@ import { Progress } from "@/components/ui/progress";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
+import Navbar from "./Navbar";
 // import { useAuth } from "@/context/AuthContext";
 
 // Mock data for development
@@ -130,7 +131,9 @@ const CountUp = ({ end }: { end: number }) => {
 export const Profile = () => {
 //   const { logout } = useAuth();
   return (
-    <div className="min-h-screen bg-slate-900 text-white">
+    <>
+    <Navbar />
+    <div className="min-h-screen bg-slate-950 pt-16 text-white">
       {/* Profile Section */}
       <motion.div 
         initial={{ opacity: 0 }}
@@ -308,6 +311,7 @@ export const Profile = () => {
         </div>
       </footer>
     </div>
+    </>
   );
 };
 
