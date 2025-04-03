@@ -316,6 +316,7 @@ export const getDashboardData = async (req: Request, res: Response) => {
   try {
     const username = res.locals.jwtData.username; // Assuming user ID is available in request
     const user = await User.findOne({ username });
+    console.log(user);
     if (!user) {
       return res.status(404).json({ message: 'User not found' });
     }

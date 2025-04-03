@@ -6,6 +6,7 @@ import {
   useState,
 } from "react";
 import { loginUser, logoutUser, checkAuthStatus, signup as signupAPI } from "../communications/userCommunications";   
+import { useNavigate } from "react-router-dom";
 
 type User = {
   username: string;
@@ -68,6 +69,8 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
 
   const logout = async () => {
     await logoutUser();
+    const navigate = useNavigate();
+    navigate('/');
     setUser(null);
     setIsLoggedIn(false);
   };

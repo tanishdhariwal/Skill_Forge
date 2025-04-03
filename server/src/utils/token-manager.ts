@@ -24,10 +24,12 @@ export const verifyToken = async (
   res: Response,
   next: NextFunction) => {
     console.log("req.signedCookies[COOKIE_NAME]", req.signedCookies);
+    console.log("COOKIE_NAME---------", COOKIE_NAME);
     const token = req.signedCookies[COOKIE_NAME];
+    console.log("token", token);
   
   if (!token || token.trim() === "") {
-    return res.status(401).json({ message: "Token Not Received" });
+    return res.status(406).json({ message: "Token Not Received" });
   }
   try {
     const decoded = jwt.verify(token, JWT_SECRET as string);
