@@ -390,7 +390,7 @@ export const getProfile = async (req: Request, res: Response) => {
     const username = res.locals.jwtData.username; // Required authentication
     
     const user = await User.findOne({ username })
-        .populate('Badge', 'name description type icon') // Ensure Badge schema is imported
+        .populate('badges', 'name description type icon') // Ensure Badge schema is imported
         .populate('studyPlans', 'title')
         .populate('interviews', '_id');
 
