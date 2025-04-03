@@ -9,7 +9,11 @@ const Navbar = () => {
     <nav className="fixed top-0 w-full z-50 bg-gray-900 border-b border-gray-800 py-4 px-6 flex items-center justify-between">
       {/* Logo on left */}
       <div className="flex items-center">
-        <h1 className="text-2xl font-bold text-white">UP SKILL</h1>
+        <Link to="/dashboard" className="group">
+          <h1 className="text-2xl font-bold bg-gradient-to-r from-blue-400 to-purple-600 bg-clip-text text-transparent hover:from-blue-500 hover:to-purple-700 transition-all duration-300 transform group-hover:scale-105">
+            SKILL FORGE
+          </h1>
+        </Link>
       </div>
 
       {/* Right side flex container for battle button, points and avatar */}

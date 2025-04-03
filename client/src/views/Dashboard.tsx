@@ -116,7 +116,7 @@ const mockStreakData = {
 const navItems = [
   { icon: Home, label: 'Dashboard', path: '/dashboard' },
   { icon: BookOpen, label: 'Learning', path: '/learn' },
-  { icon: BarChart3, label: 'Progress', path: '/progress' },
+  { icon: BarChart3, label: 'Study Planner', path: '/studyplanner' },
   { icon: Settings, label: 'Settings', path: '/settings' },
 ];
 
