@@ -30,6 +30,6 @@ userRoutes.get("/daily-activity", verifyToken, getDailyActivity);
 userRoutes.put("/daily-activity", verifyToken, updateDailyActivity);
 userRoutes.get("/updateStreak", verifyToken, streakUpdate);
 userRoutes.post("/updatePassword", verifyToken, updatePassword);
-userRoutes.get("/profile", verifyToken, getDashboardData);
+userRoutes.get("/dashhboard", verifyToken, getDashboardData);
 userRoutes.put("/addExp", verifyToken, addExp);
 export default userRoutes;
