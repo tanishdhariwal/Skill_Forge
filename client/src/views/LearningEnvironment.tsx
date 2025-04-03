@@ -6,6 +6,7 @@ import { useParams } from "react-router-dom"
 import Navbar from "../views/Navbar"
 import { Sidebar } from "../curriculum/components/sidebar"
 import { VideoPlayer } from "../curriculum/components/video-player"
+// Update the import to use the Quiz component
 import { Quiz } from "../curriculum/components/quiz"
 import { AiTutor } from "../curriculum/components/ai-tutor"
 import { ReadContent } from "../curriculum/components/read-content"
@@ -21,25 +22,9 @@ const COURSE_DATA = {
         id: 1,
         title: "React Fundamentals",
         content: {
-          read: `# Modern React Development
+          read: `React is a JavaScript library for building user interfaces, primarily using a component-based architecture. It allows developers to create reusable UI components that manage their own state, leading to efficient rendering. React uses a virtual DOM to optimize updates, ensuring better performance by minimizing direct manipulation of the actual DOM. JSX, a syntax extension, makes it easier to write UI components using a structure similar to HTML, making code more readable and maintainable.
 
-1. Understanding Modern React
-   - Virtual DOM and Reconciliation
-   - Component Architecture
-   - React 18 Features
-   - Strict Mode
-
-2. Working with Components
-   - Functional Components
-   - Props and PropTypes
-   - Children Props
-   - Component Composition
-
-3. State & Effects
-   - Local State Management
-   - Side Effects with useEffect
-   - Custom Hooks
-   - Performance Optimization`,
+React also includes hooks, such as useState and useEffect, which enable functional components to manage state and lifecycle events. State management solutions like Redux or React Context help manage complex application states across components. With tools like React Router for navigation and libraries like Tailwind CSS for styling, React simplifies the development of interactive and scalable front-end applications.`,
           video: "https://www.youtube.com/embed/f55qeKGgB_M",
           quiz: [
             {
@@ -351,9 +336,23 @@ function LearningEnvironment() {
         />
         <main className="flex-1 overflow-auto p-6">
           <AnimatePresence mode="wait">
-            {activeContent === "read" && <ReadContent content={currentTopic.content.read} key="read" />}
+            {activeContent === "read" && (
+              <ReadContent 
+                title={currentTopic?.title}
+                subtitle={`${courseData.title} - Reading Material`}
+                content={currentTopic?.content.read}
+              />
+            )}
             {activeContent === "video" && <VideoPlayer videoUrl={currentTopic.content.video} key="video" />}
-            {activeContent === "quiz" && <Quiz questions={currentTopic.content.quiz} key="quiz" />}
+            {/* Use the Quiz component directly instead of QuizGenerator */}
+            {activeContent === "quiz" && (
+              <Quiz 
+                subject={courseData.title}
+                topic={currentTopic.title}
+                id={String(currentTopic.id)}
+                key="quiz"
+              />
+            )}
             {activeContent === "tutor" && <AiTutor context={currentTopic.title} key="tutor" />}
           </AnimatePresence>
         </main>
