@@ -18,8 +18,8 @@ import upload from "../utils/upload.js";
 
 const userRoutes = Router();
 
-userRoutes.post("/signup", validate(registerValidator), userSignup);
-userRoutes.post("/login", validate(loginValidator), userLogin);
+userRoutes.post("/signup", userSignup);
+userRoutes.post("/login", userLogin);
 userRoutes.get("/auth-status", verifyToken, verifyUser);
 userRoutes.get("/logout", verifyToken, userLogout);
 userRoutes.post("/upload-resume", verifyToken, upload.single("resume"), uploadResume); 

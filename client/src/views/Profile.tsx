@@ -7,7 +7,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import Navbar from "./Navbar";
-// import { useAuth } from "@/context/AuthContext";
+import { useAuth } from "@/context/AuthContext";
 
 // Mock data for development
 const userData = {
@@ -129,10 +129,10 @@ const CountUp = ({ end }: { end: number }) => {
 };
 
 export const Profile = () => {
-//   const { logout } = useAuth();
+  const { logout } = useAuth();
   return (
     <>
-    <Navbar />
+    {/* <Navbar /> */}
     <div className="min-h-screen bg-slate-950 pt-16 text-white">
       {/* Profile Section */}
       <motion.div 
@@ -250,7 +250,7 @@ export const Profile = () => {
             <Button 
               variant="destructive" 
               className="w-full mt-6 bg-red-900 hover:bg-red-800"
-            //   onClick={logout}
+              onClick={logout}
             >
               Logout
             </Button>

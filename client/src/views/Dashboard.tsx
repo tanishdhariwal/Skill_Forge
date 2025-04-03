@@ -1,26 +1,19 @@
-import { useState } from 'react';
 import { motion } from 'framer-motion';
-import { Link } from 'react-router-dom';
-import { 
-  Home, 
-  BookOpen, 
-  Settings, 
-  LogOut, 
-  User, 
-  Menu, 
-  X, 
-  ChevronRight, 
-  BarChart3, 
-  Clock, 
-  CheckCircle2,
-  AlertCircle,
-  Flame,
+import {
+  BarChart3,
+  BookOpen,
+  ChevronRight,
+  Clock,
   Code,
   Database,
+  Flame,
+  Home,
+  Layers,
+  LogOut,
   Server,
-  Layers
+  Settings
 } from 'lucide-react';
-import Navbar from './Navbar';
+import { Link } from 'react-router-dom';
 
 // Animation variants
 const containerVariants = {
@@ -121,9 +114,11 @@ const navItems = [
 ];
 
 const Dashboard = () => {
-  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  // Removed: const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  // Uncomment below if the mobile state is needed within Dashboard:
+  // const { mobileMenuOpen, setMobileMenuOpen } = useOutletContext<{ mobileMenuOpen: boolean; setMobileMenuOpen: React.Dispatch<React.SetStateAction<boolean>> }>();
+  
   const username = "Ramesh Rao"; // Hardcoded user
-//   const userPoints = 350; // Hardcoded points for navbar
 
   // Function to generate calendar grid
   const generateCalendarGrid = () => {
@@ -154,29 +149,11 @@ const Dashboard = () => {
 
   return (
     <div className="min-h-screen bg-gray-950 text-gray-100">
-      {/* Navbar - Added at top */}
-      <Navbar />
-
-      {/* Mobile Navigation Toggle */}
-      <div className="md:hidden fixed top-4 right-4 z-50">
-        <button
-          onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-          className="p-2 bg-gray-800 rounded-md"
-        >
-          {mobileMenuOpen ? (
-            <X className="h-6 w-6 text-white" />
-          ) : (
-            <Menu className="h-6 w-6 text-white" />
-          )}
-        </button>
-      </div>
-
-      {/* Sidebar Navigation - No avatar and no schedule */}
+      {/* Sidebar Navigation */}
       <aside
         className={`fixed inset-y-0 left-0 z-40 w-64 bg-gray-900 transform transition-transform duration-300 ease-in-out ${
-          mobileMenuOpen ? 'translate-x-0' : '-translate-x-full md:translate-x-0'
+          'translate-x-0'
         }`}
-        // Adjust top to account for navbar
         style={{ top: '72px' }}
       >
         <div className="flex flex-col h-full">
@@ -231,7 +208,6 @@ const Dashboard = () => {
           <motion.div variants={itemVariants} className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
             {[
               { label: 'Current Streak', value: `${mockStreakData.currentStreak} days`, icon: Flame, color: 'text-orange-500' },
-            //   { label: 'Sessions Completed', value: '42', icon: CheckCircle2, color: 'text-green-500' },
               { label: 'Avg. Score', value: '82%', icon: BarChart3, color: 'text-blue-500' },
               { label: 'Time Invested', value: '86 hours', icon: Clock, color: 'text-purple-500' }
             ].map((stat, index) => (
