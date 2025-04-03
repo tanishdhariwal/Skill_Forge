@@ -15,6 +15,9 @@ import studyPlanRoutes from './routes/roadmapRoutes.js';
 import interviewRouter from './routes/mockInterviewRoutes.js';
 import quizRoutes from './routes/quizRoutes.js';
 import { config } from 'dotenv';
+import { setupMatchmaking } from './controllers/matchMaking.js';
+import { Server } from "socket.io";
+import http from "http";
 dotenv.config();
 
 const app = express();
@@ -34,6 +37,11 @@ app.use('/api/v1/user', userRouter);
 app.use('/api/v1/interview', interviewRouter);
 app.use('/api/v1/quiz', quizRoutes);
 app.use('/api/v1/studyplan', studyPlanRoutes);
+
+
+const server = http.createServer(app);
+const io = new Server(server, { cors: { origin: "*" } });
+setupMatchmaking(io);
 
 // Error handling middleware
 // app.use(errorHandler);
