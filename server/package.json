@@ -12,27 +12,19 @@
   "license": "ISC",
   "description": "",
   "dependencies": {
-    "compression": "^1.8.0",
+    "bcrypt": "^5.1.1",
     "cors": "^2.8.5",
     "dotenv": "^16.4.7",
     "express": "^5.1.0",
-    "helmet": "^8.1.0",
+    "express-validator": "^7.2.1",
+    "jsonwebtoken": "^9.0.2",
     "mongodb": "^6.15.0"
   },
   "devDependencies": {
-    "@eslint/js": "^9.23.0",
-    "@types/compression": "^1.7.5",
+    "@types/bcrypt": "^5.0.2",
     "@types/cors": "^2.8.17",
     "@types/express": "^5.0.1",
-    "@types/mongodb": "^4.0.6",
-    "@types/node": "^22.14.0",
-    "eslint": "^9.23.0",
-    "eslint-plugin-react": "^7.37.4",
-    "globals": "^16.0.0",
-    "nodemon": "^3.1.9",
-    "prettier": "^3.5.3",
-    "ts-node": "^10.9.2",
-    "typescript": "^5.8.2",
-    "typescript-eslint": "^8.29.0"
+    "@types/jsonwebtoken": "^9.0.9",
+    "@types/mongodb": "^4.0.6"
   }
 }
