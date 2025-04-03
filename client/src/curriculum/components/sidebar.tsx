@@ -3,7 +3,7 @@
 import { motion } from "framer-motion"
 import { BookOpen, Video, FileQuestion, MessageSquareText } from "lucide-react"
 import { cn } from "@/lib/utils"
-import type { ContentType } from "@/App"
+import { type ContentType } from "@/App"
 
 interface SidebarProps {
   activeContent: ContentType
@@ -64,19 +64,13 @@ export function Sidebar({ activeContent, setActiveContent }: SidebarProps) {
                 {isActive && (
                   <motion.div
                     layoutId="sidebar-active-bg"
-                    className="absolute inset-0 rounded-lg bg-orange-500/20"
-                    // style={{
-                    //   background:
-                    //     "repeating-linear-gradient(45deg, rgba(11, 52, 235, 0.2),10px)",
-                    // }}
-                    transition={{ type: "spring", stiffness: 380, damping: 30 }}
-                  />
-                )}
-                {isActive  && (
-                  <motion.div
-                    layoutId="sidebar-active-bg"
                     className="absolute inset-0 rounded-lg bg-gray-800"
-                    transition={{ type: "spring", stiffness: 380, damping: 30 }}
+                    transition={{ 
+                      type: "spring", 
+                      stiffness: 380, 
+                      damping: 30,
+                      layout: { duration: 0.2 } 
+                    }}
                   />
                 )}
                 <span className="relative flex items-center">
