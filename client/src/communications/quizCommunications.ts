@@ -11,11 +11,23 @@ export interface QuestionType {
 
 export const getStreakQuestions = async (): Promise<QuestionType[]> => {
   try {
-    const response = await axios.get('http://127.0.0.1:5000/api/v1/quiz/getStreakQuestions');
+    // Use the route path without the full URL since axios.defaults.baseURL is set in main.tsx
+    const response = await axios.get('/quiz/getStreakQuestions');
     return response.data;
-  } catch (error) {
+  } catch (error: any) {
     console.error('Error fetching streak questions:', error);
-    throw new Error('Failed to fetch daily questions');
+    
+    // More detailed error information for debugging
+    if (error.response) {
+      // The request was made and the server responded with a status code
+      console.error('Error response data:', error.response.data);
+      console.error('Error response status:', error.response.status);
+    } else if (error.request) {
+      // The request was made but no response was received
+      console.error('Error request:', error.request);
+    }
+    
+    throw new Error('Failed to fetch daily questions: ' + (error.message || 'Unknown error'));
   }
 };
 

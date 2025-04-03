@@ -92,7 +92,7 @@ export const LandingPage = () => {
 
         <div className="container bg-transparent mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
           <motion.div
-            className="max-w-4xl mx-auto text-center"
+            className="w-full mx-auto text-center"
             variants={containerVariants}
             initial="hidden"
             animate="visible"
@@ -104,7 +104,7 @@ export const LandingPage = () => {
               <TrueFocus 
                 sentence="Enter The New Learning Era"
                 manualMode={true}
-                blurAmount={4}
+                blurAmount={6}
                 borderColor="#1EB0A4"
                 glowColor="rgba(255, 85, 85, 0.6)"
                 animationDuration={0.8}

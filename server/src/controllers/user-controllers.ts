@@ -10,6 +10,7 @@ import fs from "fs";
 import upload from "../utils/upload.js";
 // console.log("process.env.COOKIE_NAME", process.env.COOKIE_NAME);
 import { COOKIE_NAME } from "../utils/constant.js"; 
+import { Interview } from "../models/Interview.js";
 const compare = bcrypt.compare;
 
 export const userSignup = async (
@@ -307,5 +308,75 @@ export const updatePassword = async (req: Request, res: Response) => {
   } catch (error) {
     console.error(error);
     return res.status(500).json({ message: 'Server error', cause: error.message });
+  }
+};
+
+
+export const getDashboardData = async (req: Request, res: Response) => {
+  try {
+    const username = res.locals.jwtData.username; // Assuming user ID is available in request
+    const user = await User.findOne({ username });
+    if (!user) {
+      return res.status(404).json({ message: 'User not found' });
+    }
+
+      // Fetch user's interview history
+      const interviews = await Interview.find({ userRef: user._id }).sort({ createdAt: -1 }).lean();
+      const interviewHistory = interviews.map(interview => ({
+          id: interview._id,
+          title: interview.title,
+          date: interview.createdAt.toISOString().split("T")[0],
+          score: interview.score,
+          status: interview.status,
+      }));
+
+      if (!user) {
+          return res.status(404).json({ message: "User not found" });
+      }
+
+      const streakCalendar = user.daysAttended.map(day => ({
+          date: day.date.toISOString().split("T")[0],
+          completed: day.activities.some(activity => activity.type === "streak"),
+      }));
+
+      const streakData = {
+          currentStreak: user.streak.score,
+          longestStreak: user.longestStreak,
+          thisMonth: streakCalendar.filter(day => new Date(day.date).getMonth() === new Date().getMonth()).length,
+          lastMonth: streakCalendar.filter(day => new Date(day.date).getMonth() === new Date().getMonth() - 1).length,
+          streakCalendar,
+      };
+      const userdata = {
+          username: user.username,
+          level: user.level,
+          exp: user.exp
+      }
+
+      return res.json({ userdata,interviewHistory, streakData });
+  } catch (error) {
+      console.error("Error fetching dashboard data:", error);
+      return res.status(500).json({ message: "Internal Server Error" });
+  }
+};
+
+
+export const addExp = async (req: Request, res: Response) => {
+  try {
+      const username = res.locals.jwtData.username;
+      // const { exp } = req.body;
+      const user = await User.findOne({ username });
+      if (!user) {
+          return res.status(404).json({ message: 'User not found' });
+      }
+      user.exp += 10;
+      if(user.exp >= 100) {
+          user.level += 1;
+          user.exp = 0;
+      }
+      await user.save();
+      return res.status(200).json({ message: 'Exp added successfully' });
+  } catch (error) {
+      console.error(error);
+      return res.status(500).json({ message: 'Server error', cause: error.message });
   }
 };

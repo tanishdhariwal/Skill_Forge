@@ -79,9 +79,9 @@ export const logoutUser = async () => {
     }
     const navigate = useNavigate();
     navigate('/');
-    // return response.data;
+    return response.data;
   } catch (error: any) {
-    toast.error(error.response?.data?.message || "Logout failed");
+    // toast.error(error.response?.data?.message || "Logout failed");
     throw error;
   }
 };

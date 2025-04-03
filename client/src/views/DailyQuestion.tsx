@@ -2,9 +2,10 @@ import { useEffect, useState } from 'react';
 import { motion } from 'framer-motion';
 import { QuestionType, getStreakQuestions } from '../communications/quizCommunications';
 import Navbar from './Navbar';
-import { Check, Clock, ChevronRight, Loader2, X, AlertCircle, Calendar } from 'lucide-react';
+import { Check, Clock, ChevronRight, Loader2, X, AlertCircle, Calendar, RefreshCw } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
 import { toast } from 'react-hot-toast';
+import { Button } from '@/components/ui/button';
 
 const DailyQuestion = () => {
   const [questions, setQuestions] = useState<QuestionType[]>([]);
@@ -12,20 +13,24 @@ const DailyQuestion = () => {
   const [selectedAnswers, setSelectedAnswers] = useState<{ [key: string]: string }>({});
   const [submittedAnswers, setSubmittedAnswers] = useState<{ [key: string]: boolean }>({});
   const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+
+  const loadQuestions = async () => {
+    try {
+      setIsLoading(true);
+      setError(null);
+      const data = await getStreakQuestions();
+      setQuestions(data);
+    } catch (error: any) {
+      console.error('Failed to load questions:', error);
+      setError(error?.message || 'Failed to load daily questions');
+      toast.error('Failed to load daily questions');
+    } finally {
+      setIsLoading(false);
+    }
+  };
 
   useEffect(() => {
-    const loadQuestions = async () => {
-      try {
-        setIsLoading(true);
-        const data = await getStreakQuestions();
-        setQuestions(data);
-      } catch (error) {
-        toast.error('Failed to load daily questions');
-      } finally {
-        setIsLoading(false);
-      }
-    };
-
     loadQuestions();
   }, []);
 
@@ -114,6 +119,22 @@ const DailyQuestion = () => {
               <Loader2 className="h-8 w-8 text-blue-500 animate-spin" />
               <p className="ml-3 text-lg text-gray-400">Loading questions...</p>
             </div>
+          ) : error ? (
+            <motion.div 
+              variants={itemVariants}
+              className="bg-gray-900 rounded-lg p-6 text-center"
+            >
+              <AlertCircle className="h-12 w-12 text-red-500 mx-auto mb-4" />
+              <h2 className="text-xl font-bold mb-2">Failed to Load Questions</h2>
+              <p className="text-gray-400 mb-6">{error}</p>
+              <Button 
+                onClick={loadQuestions} 
+                className="mx-auto flex items-center gap-2"
+              >
+                <RefreshCw className="h-4 w-4" />
+                Try Again
+              </Button>
+            </motion.div>
           ) : questions.length === 0 ? (
             <motion.div 
               variants={itemVariants}
