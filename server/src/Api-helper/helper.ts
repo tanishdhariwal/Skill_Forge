@@ -181,8 +181,38 @@ export const getFeedback = async (exchange) => {
       content: `Rate the following interview response on a scale of 1 to 10: ${exchange}`,
     },
   ];
-  const marks = Number.parseInt(await callGroqAI(messages2,"marks gen"));
-  return {feedback: feedback,marks:marks};
+  
+  let marks = 0; // Default value
+  try {
+    const marksResponse = await callGroqAI(messages2,"marks gen");
+    // Try to parse as JSON first
+    try {
+      const jsonResponse = JSON.parse(marksResponse);
+      if (jsonResponse && typeof jsonResponse.marks === 'number' && !isNaN(jsonResponse.marks)) {
+        marks = jsonResponse.marks;
+      } else if (jsonResponse && typeof jsonResponse.marks === 'string') {
+        // If marks is a string, try to parse it as a number
+        const parsedMarks = Number(jsonResponse.marks);
+        if (!isNaN(parsedMarks)) {
+          marks = parsedMarks;
+        }
+      }
+    } catch (e) {
+      // If not valid JSON, try to extract a number directly from the string
+      const numMatch = marksResponse.match(/\d+(\.\d+)?/);
+      if (numMatch) {
+        const parsedMarks = Number(numMatch[0]);
+        if (!isNaN(parsedMarks)) {
+          marks = parsedMarks;
+        }
+      }
+    }
+  } catch (error) {
+    console.error("Error getting marks:", error);
+    // Keep default marks value
+  }
+
+  return {feedback: feedback, marks: marks};
 }
 export const genNextQuestion =async (exchanges, jobDescription, jobRole, experience, resume) => {
     const messages = [

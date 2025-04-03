@@ -15,7 +15,8 @@ export const startInterview = async (req: Request, res: Response) => {
 
     const resume = "Basic resume data"; // Placeholder for resume data
     
-    const question = generateQuestion(jobDescription, jobRole, experience, resume);
+    // Add await to resolve the promise before using it
+    const question = await generateQuestion(jobDescription, jobRole, experience, resume);
     const interview = new Interview({
         title,
         jobDescription,
@@ -53,7 +54,8 @@ export const genrateNextQuestion = async (req: Request, res: Response) => {
     lastExchange.exchangeFeedback = feedback;
     lastExchange.marks = marks;
     const { jobDescribtion, jobRole, experience, resumeData } = interview;
-    const question = genNextQuestion(interview.exchanges, jobDescribtion, jobRole, experience, resumeData);
+    // Add await here as well to resolve the promise
+    const question = await genNextQuestion(interview.exchanges, jobDescribtion, jobRole, experience, resumeData);
     interview.exchanges.push({question: {questionText: question}});
     await interview.save();
     const exchanges = interview.exchanges
@@ -101,7 +103,8 @@ export const resumeInterview = async (req: Request, res: Response) => {
         if (!user) {
             return res.status(404).json({ message: "User not found" });
         }
-        const interview = await Interview.findOne({interview_id,userRef: user._id});
+        // Fix the parameter name from interview_id to _id to match MongoDB field
+        const interview = await Interview.findOne({_id: interview_id, userRef: user._id});
         if (!interview) {
         return res.status(404).json({ message: "Interview not found" });
         }
@@ -139,7 +142,8 @@ export const getInterviewData = async (req: Request, res: Response) => {
         if (!user) {
             return res.status(404).json({ message: "User not found" });
         }
-        const interview = await Interview.findOne({interview_id,userRef: user._id});
+        // Fix the parameter name here as well
+        const interview = await Interview.findOne({_id: interview_id, userRef: user._id});
         if (!interview) {
         return res.status(404).json({ message: "Interview not found" });
         }
