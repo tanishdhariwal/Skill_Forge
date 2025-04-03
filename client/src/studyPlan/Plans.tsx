@@ -1,8 +1,4 @@
-import React, { useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
-import * as Progress from '@radix-ui/react-progress';
-import { BookOpen, Plus } from 'lucide-react';
-import { motion } from 'framer-motion';
+import { Button } from "@/components/ui/button";
 import {
   Dialog,
   DialogContent,
@@ -10,11 +6,6 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
-import { useForm } from "react-hook-form";
 import {
   Form,
   FormControl,
@@ -23,8 +14,15 @@ import {
   FormLabel,
   FormMessage,
 } from "@/components/ui/form";
-import { Card, CardContent } from "@/components/ui/card";
-import { cn } from "@/lib/utils";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
+import * as Progress from '@radix-ui/react-progress';
+import { motion } from 'framer-motion';
+import { BookOpen, Plus } from 'lucide-react';
+import React, { useEffect, useState } from 'react';
+import { useForm } from "react-hook-form";
+import { useNavigate } from 'react-router-dom';
 import { generateStudyPlan, getPlansTiles } from "../communications/studyPlanCommunications";
 
 interface RoadmapTile {
