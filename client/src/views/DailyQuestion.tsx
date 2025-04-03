@@ -209,6 +209,27 @@ const DailyQuestion = () => {
                   <motion.button
                     variants={itemVariants}
                     disabled={!selectedAnswers[currentQuestion._id]}
+                    className="mt-6 bg-blue-600 hover:bg-blue-700 disabled:bg-gray-700 disabled:text-gray-400 text-white px-5 py-2 rounded-md transition-colors w-full"
+                    onClick={() => handleSubmitAnswer(currentQuestion._id)}
+                  >
+                    Submit Answer
+                  </motion.button>
+                )}
+              </motion.div>
+
+              <motion.div 
+                variants={itemVariants}
+                className="flex justify-between items-center"
+              >
+                <button
+                  disabled={currentQuestionIndex === 0}
+                  className="flex items-center px-4 py-2 rounded-md bg-gray-800 text-white disabled:bg-gray-800/50 disabled:text-gray-500"
+                  onClick={handlePreviousQuestion}
+                >
+                  <ChevronRight className="h-5 w-5 rotate-180 mr-1" />
+                  Previous
+                </button>
+
                 <div className="text-center">
                   <span className="text-gray-400">
                     Question {currentQuestionIndex + 1} of {questions.length}
