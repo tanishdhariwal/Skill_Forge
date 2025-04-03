@@ -29,7 +29,7 @@ const COURSE_DATA = {
 
 function LearningEnvironment() {
   const { courseId } = useParams<{ courseId: keyof typeof COURSE_DATA }>()
-  const [activeContent, setActiveContent] = useState<ContentType>("video")
+  const [activeContent, setActiveContent] = useState<ContentType>("read")
 
   const courseData = COURSE_DATA[courseId || 'mern']
 
