@@ -74,12 +74,10 @@ export const logoutUser = async () => {
      */
   try {
     const response = await axios.get('/user/logout');
-    if(response.status === 200 ) {
-      toast.success("User logged out");
-    }
+    toast.success("Logged out successfully");
     return response.data;
   } catch (error: any) {
-    // toast.error(error.response?.data?.message || "Logout failed");
+    toast.error(error.response?.data?.message || "Logout failed");
     throw error;
   }
 };
