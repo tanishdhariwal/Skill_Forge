@@ -35,7 +35,7 @@ userRoutes.get("/daily-activity", verifyToken, getDailyActivity);
 userRoutes.put("/daily-activity", verifyToken, updateDailyActivity);
 userRoutes.get("/updateStreak", verifyToken, streakUpdate);
 userRoutes.post("/updatePassword", verifyToken, updatePassword);
-userRoutes.get("/dashhboard", verifyToken, getDashboardData);
+userRoutes.get("/dashboard", verifyToken, getDashboardData);
 userRoutes.get("/profile", verifyToken, getProfile);
 userRoutes.put("/addExp", verifyToken, addExp);
 userRoutes.post("/createBadge", verifyToken, createBadge);
