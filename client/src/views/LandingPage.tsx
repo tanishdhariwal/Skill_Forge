@@ -54,7 +54,7 @@ export const LandingPage = () => {
         <div className="container bg-transparent mx-auto  sm:px-6 lg:px-8">
           <div className="flex justify-between items-center py-4">
             <div className="flex items-center">
-              <span className="text-3xl font-bold text-white">UP SKILL</span>
+              <span className="text-3xl font-bold text-white">SKILL GARAGE</span>
             </div>
 
             <nav className="hidden md:flex space-x-8">

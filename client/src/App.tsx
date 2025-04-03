@@ -15,6 +15,7 @@ import DailyQuestion from './views/DailyQuestion';
 import CourseSelection from "./views/CourseSelection";
 import Plans from "./studyPlan/Plans.tsx";
 import FlowChart from "./studyPlan/FlowChart.tsx";
+import Interview from "./views/Interview";
 
 // New layout for authenticated routes, placing Navbar on top
 function AuthenticatedLayout() {
@@ -61,6 +62,8 @@ function App() {
           <Route path="/daily-question" element={<DailyQuestion />} />
           <Route path="/plans" element={<Plans />} />
           <Route path="/flow" element={<FlowChart />} />
+          {/* Added Interview route */}
+          <Route path="/interview" element={<Interview />} />
         </Route>
       )}
       <Route path="*" element={<PageNotFound />} />
