@@ -39,11 +39,11 @@ const server = createServer(app);
 const io = new Server(server, { cors: { origin: true, credentials: true } });
 setupMatchmaking(io);
 
-server.listen(5000, "0.0.0.0", () => {
+server.listen(4000, "0.0.0.0", () => {
   console.log(`Server running on port 4000`);
 });
 
 app.listen(PORT, "0.0.0.0", () => {
-  console.log(`Server running on port 4000`);
+  console.log(`APP running on port 4000`);
 });
 
