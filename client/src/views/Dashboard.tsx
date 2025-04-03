@@ -356,13 +356,16 @@ const Dashboard = () => {
                     {calendarDays.map((day, i) => (
                       <div 
                         key={i} 
-                        className={`aspect-square rounded-sm flex items-center justify-center text-xs ${
-                          day.completed 
+                        className={`relative aspect-square rounded-sm flex items-center justify-center text-xs ${
+                          day.completed === true 
                             ? 'bg-orange-500/50 text-orange-100' 
                             : 'bg-gray-700/50 text-gray-400'
                         }`}
                       >
                         {day.day}
+                        {day.completed && (
+                          <span className="absolute top-0.5 right-0.5 h-1.5 w-1.5 bg-green-400 rounded-full"></span>
+                        )}
                       </div>
                     ))}
                   </div>

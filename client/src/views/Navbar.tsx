@@ -11,7 +11,7 @@ const Navbar = () => {
       <div className="flex items-center">
         <Link to="/dashboard" className="group">
           <h1 className="text-2xl font-bold bg-gradient-to-r from-blue-400 to-purple-600 bg-clip-text text-transparent hover:from-blue-500 hover:to-purple-700 transition-all duration-300 transform group-hover:scale-105">
-            SKILL FORGE
+            SKILL GARAGE
           </h1>
         </Link>
       </div>
