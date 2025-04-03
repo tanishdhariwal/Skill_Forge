@@ -1,26 +1,24 @@
 import React from "react";
-import Navbar from "./components/Navbar/Navbar";
-import LandingPage from "./pages/LandingPage";
-import { Routes, Route } from "react-router-dom";
-import Dashboard from "./pages/Dashboard";
-import Frontend from "./pages/Topics/Frontend.jsx";
-import Languages from "./pages/Topics/Languages.jsx";
-import Backend from "./pages/Topics/Backend.jsx";
-import Topic from "./components/Topic/Topic";
-import Content from "./components/Content/Content";
-import GenerateContent from "./components/GenerateContent/GenerateContent";
-import NotFound from "./pages/NotFound.jsx";
-import Carousel from "./components/Carousel/Carousel";
-import Progress from "./components/Progress/Progress";
-import Sample from "./Sample.jsx";
-import Login from "./pages/Login.jsx";
-import Signup from "./pages/Signup.jsx";
+import { Route, Routes } from "react-router-dom";
 import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css"; // Import CSS
-import ProtectedRoute from "./ProtectedRoute";
-import { useAuth } from "./services/AuthService";
+import Content from "./components/Content/Content";
+import GenerateContent from "./components/GenerateContent/GenerateContent";
+import InterviewApp from "./components/InterviewApp";
+import Navbar from "./components/Navbar/Navbar";
 import Streak from "./components/Streak";
-import InterviewApp  from "./components/InterviewApp"
+import Topic from "./components/Topic/Topic";
+import Dashboard from "./pages/Dashboard";
+import LandingPage from "./pages/LandingPage";
+import Login from "./pages/Login.jsx";
+import NotFound from "./pages/NotFound.jsx";
+import Signup from "./pages/Signup.jsx";
+import Backend from "./pages/Topics/Backend.jsx";
+import Frontend from "./pages/Topics/Frontend.jsx";
+import Languages from "./pages/Topics/Languages.jsx";
+import ProtectedRoute from "./ProtectedRoute";
+// import Sample from "./Sample.jsx";
+import { useAuth } from "./services/AuthService";
 
 
 const App = () => {
@@ -134,7 +132,7 @@ const App = () => {
                 </ProtectedRoute>
               }
             />
-            <Route path="/sample" element={<Sample />} />
+            {/* <Route path="/sample" element={<Sample />} /> */}
             <Route path="*" element={<NotFound />} />
           </Routes>
         </div>
