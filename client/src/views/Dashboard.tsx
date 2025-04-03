@@ -113,7 +113,7 @@ const navItems = [
   { icon: Home, label: 'Dashboard', path: '/dashboard' },
   { icon: BookOpen, label: 'Learning', path: '/learn' },
   { icon: BarChart3, label: 'Study Planner', path: '/plans' },
-  { icon: Settings, label: 'Settings', path: '/settings' },
+  { icon: Settings, label: 'Interview', path: '/interview' },
 ];
 
 const Dashboard = () => {
