@@ -1,8 +1,22 @@
 import axios from "axios";
 
-export const generateStudyPlan = async () => {
+export const generateStudyPlan = async (
+  topic: string,
+  level: string,
+  experience: number
+) => {
+  try {
+    const response = await axios.post("/studyPlan/generateStudyPlan", {
+      experience,
+      topic,
+      level
+    });
+    return response.data;
+  } catch (error) {
+    console.error("Error generating study plan:", error);
+    throw new Error("Failed to generate study plan");
+  }
   /**
- * 
  * 
  * post:
 http://127.0.0.1:5000/api/v1/studyPlan/generateStudyPlan
@@ -47,6 +61,13 @@ export const getPlansTiles = async () => {
 };
 
 export const getStudyPlan = async (id: string) => {
+  try {
+    const response = await axios.get(`/studyPlan/getPlan/${id}`);
+    return response.data;
+  } catch (error) {
+    console.error("Error fetching study plan:", error);
+    throw new Error("Failed to fetch study plan");
+  }
   /**
      * 
      * get:

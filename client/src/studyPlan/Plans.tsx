@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import * as Progress from '@radix-ui/react-progress';
 import { BookOpen, Plus } from 'lucide-react';
@@ -25,12 +25,13 @@ import {
 } from "@/components/ui/form";
 import { Card, CardContent } from "@/components/ui/card";
 import { cn } from "@/lib/utils";
+import { generateStudyPlan, getPlansTiles } from "../communications/studyPlanCommunications";
 
 interface RoadmapTile {
-  id: string;
+  _id: string;
   title: string;
-  description: string;
-  progress: number;
+  description?: string;
+  progress?: number;
 }
 
 interface CreateRoadmapForm {
@@ -39,29 +40,13 @@ interface CreateRoadmapForm {
   experience: number;
 }
 
-const roadmapData: RoadmapTile[] = [
-  {
-    id: '1',
-    title: 'Frontend Development',
-    description: 'Master modern frontend technologies and frameworks',
-    progress: 75
-  },
-  {
-    id: '2',
-    title: 'Backend Development',
-    description: 'Learn server-side programming and databases',
-    progress: 45
-  },
-  {
-    id: '3',
-    title: 'DevOps',
-    description: 'Understand deployment, CI/CD, and cloud services',
-    progress: 30
-  }
-];
-
 const Plans: React.FC = () => {
   const navigate = useNavigate();
+  const [roadmapData, setRoadmapData] = useState<RoadmapTile[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
+  const [isDialogOpen, setIsDialogOpen] = useState(false);
+  const [isCreating, setIsCreating] = useState(false);
+
   const form = useForm<CreateRoadmapForm>({
     defaultValues: {
       topic: "",
@@ -70,13 +55,49 @@ const Plans: React.FC = () => {
     },
   });
 
-  const handleTileClick = (id: string) => {
-    navigate(`/flow`);
+  useEffect(() => {
+    fetchRoadmaps();
+  }, []);
+
+  const fetchRoadmaps = async () => {
+    setIsLoading(true);
+    try {
+      const data = await getPlansTiles();
+      // Add progress property if not exists
+      const enhancedData = data.map((tile: RoadmapTile) => ({
+        ...tile,
+        progress: tile.progress || Math.floor(Math.random() * 100), // Placeholder progress
+        description: tile.description || "Click to view this learning roadmap"
+      }));
+      setRoadmapData(enhancedData);
+    } catch (error) {
+      console.error("Error fetching roadmaps:", error);
+    } finally {
+      setIsLoading(false);
+    }
   };
 
-  const handleCreateRoadmap = (values: CreateRoadmapForm) => {
-    alert('HI');
-    console.log(values);
+  const handleTileClick = (id: string) => {
+    navigate(`/flow`, { state: { planId: id } });
+  };
+
+  const handleCreateRoadmap = async (values: CreateRoadmapForm) => {
+    setIsCreating(true);
+    try {
+      await generateStudyPlan(
+        values.topic,
+        values.level.toLowerCase(),
+        values.experience
+      );
+      setIsDialogOpen(false);
+      form.reset();
+      // Refetch the roadmaps to include the newly created one
+      await fetchRoadmaps();
+    } catch (error) {
+      console.error("Error creating roadmap:", error);
+    } finally {
+      setIsCreating(false);
+    }
   };
 
   return (
@@ -95,7 +116,7 @@ const Plans: React.FC = () => {
           Your Roadmaps
         </motion.h1>
         
-        <Dialog>
+        <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
           <DialogTrigger asChild>
             <Button variant="default" className="bg-green-600 hover:bg-green-700">
               <Plus className="h-5 w-5 mr-2" />
@@ -172,6 +193,7 @@ const Plans: React.FC = () => {
                           min={0}
                           className="bg-slate-800 border-slate-700 text-white"
                           {...field}
+                          onChange={(e) => field.onChange(parseInt(e.target.value) || 0)}
                         />
                       </FormControl>
                       <FormMessage />
@@ -180,19 +202,20 @@ const Plans: React.FC = () => {
                 />
 
                 <div className="flex justify-end gap-4">
-                  <DialogTrigger asChild>
-                    <Button 
-                      variant="outline" 
-                      className="bg-slate-800 border-slate-700 text-slate-200 hover:bg-slate-700"
-                    >
-                      Cancel
-                    </Button>
-                  </DialogTrigger>
+                  <Button 
+                    type="button"
+                    variant="outline" 
+                    className="bg-slate-800 border-slate-700 text-slate-200 hover:bg-slate-700"
+                    onClick={() => setIsDialogOpen(false)}
+                  >
+                    Cancel
+                  </Button>
                   <Button 
                     type="submit"
                     className="bg-green-600 hover:bg-green-700"
+                    disabled={isCreating}
                   >
-                    Create Roadmap
+                    {isCreating ? "Creating..." : "Create Roadmap"}
                   </Button>
                 </div>
               </form>
@@ -201,33 +224,43 @@ const Plans: React.FC = () => {
         </Dialog>
       </div>
 
-      <motion.div 
-        className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6"
-      >
-        {roadmapData.map((tile, index) => (
-          <motion.div
-            key={tile.id}
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: index * 0.1 }}
-            whileHover={{ scale: 1.02 }}
-            className="bg-slate-900 rounded-lg p-6 shadow-sm cursor-pointer border border-slate-800 text-white"
-            onClick={() => handleTileClick(tile.id)}
-          >
-            <h2 className="text-xl font-semibold mb-2">{tile.title}</h2>
-            <p className="text-slate-400 mb-4">{tile.description}</p>
-            <Progress.Root className="relative h-2 w-full overflow-hidden rounded-full bg-slate-800">
-              <Progress.Indicator
-                className="h-full bg-green-600 transition-transform duration-500 ease-in-out"
-                style={{ transform: `translateX(-${100 - tile.progress}%)` }}
-              />
-            </Progress.Root>
-            <div className="text-right mt-2 text-sm text-slate-400">
-              {tile.progress}%
+      {isLoading ? (
+        <div className="text-center text-white py-10">Loading roadmaps...</div>
+      ) : (
+        <motion.div 
+          className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6"
+        >
+          {roadmapData.length > 0 ? (
+            roadmapData.map((tile, index) => (
+              <motion.div
+                key={tile._id}
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: index * 0.1 }}
+                whileHover={{ scale: 1.02 }}
+                className="bg-slate-900 rounded-lg p-6 shadow-sm cursor-pointer border border-slate-800 text-white"
+                onClick={() => handleTileClick(tile._id)}
+              >
+                <h2 className="text-xl font-semibold mb-2">{tile.title}</h2>
+                <p className="text-slate-400 mb-4">{tile.description}</p>
+                <Progress.Root className="relative h-2 w-full overflow-hidden rounded-full bg-slate-800">
+                  <Progress.Indicator
+                    className="h-full bg-green-600 transition-transform duration-500 ease-in-out"
+                    style={{ transform: `translateX(-${100 - (tile.progress || 0)}%)` }}
+                  />
+                </Progress.Root>
+                <div className="text-right mt-2 text-sm text-slate-400">
+                  {tile.progress}%
+                </div>
+              </motion.div>
+            ))
+          ) : (
+            <div className="col-span-3 text-center text-white py-10">
+              No roadmaps found. Create one to get started!
             </div>
-          </motion.div>
-        ))}
-      </motion.div>
+          )}
+        </motion.div>
+      )}
     </motion.div>
   );
 };

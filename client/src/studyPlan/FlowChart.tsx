@@ -11,6 +11,8 @@ import ReactFlow, {
   NodeMouseHandler,
 } from 'reactflow';
 import { BookOpen, Code, Database, Layout, Terminal, Globe, Server, FileCode, BookOpenCheck, Cloud } from 'lucide-react';
+import { useLocation, useNavigate } from 'react-router-dom';
+import { getStudyPlan } from '../communications/studyPlanCommunications';
 import 'reactflow/dist/style.css';
 
 // Types for our flow data
@@ -18,7 +20,7 @@ interface FlowNode {
   _id: string;
   title: string;
   description: string;
-  summary: string;
+  summary?: string;
   type: "Mandatory" | "Optional";
   link: string;
   __v: number;
@@ -40,101 +42,6 @@ interface FlowChartData {
   updatedAt: string;
   __v: number;
 }
-
-// Sample data
-const flowData: FlowChartData[] = [
-  {
-      "_id": "67e3ffcfdbc095d8183d6a2c",
-      "title": "Full-Stack Web Development",
-      "nodes": [
-          {
-              "_id": "67e3ffcfdbc095d8183d6a28",
-              "title": "HTML & CSS Basics",
-              "description": "Learn the fundamentals of web structure and styling.",
-              "summary": "Covers the basics of HTML for structure and CSS for design.",
-              "type": "Mandatory",
-              "link": "https://www.geeksforgeeks.org/html-tutorials/",
-              "__v": 0
-          },
-          {
-              "_id": "67e3ffcfdbc095d8183d6a29",
-              "title": "JavaScript Basics",
-              "description": "Learn JavaScript fundamentals and DOM manipulation.",
-              "summary": "Introduces JavaScript syntax, variables, loops, and DOM interactions.",
-              "type": "Mandatory",
-              "link": "https://www.geeksforgeeks.org/javascript-tutorial/",
-              "__v": 0
-          },
-          {
-              "_id": "67e3ffcfdbc095d8183d6a2a",
-              "title": "React.js",
-              "description": "Understand React components and state management.",
-              "summary": "Explores React fundamentals, JSX, props, and state handling.",
-              "type": "Optional",
-              "link": "https://www.geeksforgeeks.org/reactjs-tutorials/",
-              "__v": 0
-          },
-          {
-              "_id": "67e3ffcfdbc095d8183d6a2b",
-              "title": "Node.js & Express",
-              "description": "Learn backend development with Node.js and Express.",
-              "summary": "Covers server-side development using Node.js and Express framework.",
-              "type": "Mandatory",
-              "link": "https://www.geeksforgeeks.org/node-js/",
-              "__v": 0
-          },
-          {
-              "_id": "67e3ffcfdbc095d8183d6a2f",
-              "title": "Database Management (SQL & NoSQL)",
-              "description": "Understand database design, queries, and indexing.",
-              "summary": "Introduces SQL and NoSQL databases, queries, and optimization.",
-              "type": "Mandatory",
-              "link": "https://www.geeksforgeeks.org/dbms/",
-              "__v": 0
-          },
-          {
-              "_id": "67e3ffcfdbc095d8183d6a30",
-              "title": "RESTful APIs & Authentication",
-              "description": "Learn how to build secure APIs with JWT and OAuth.",
-              "summary": "Explains API principles, JWT, OAuth, and security best practices.",
-              "type": "Mandatory",
-              "link": "https://www.geeksforgeeks.org/rest-api/",
-              "__v": 0
-          },
-          {
-              "_id": "67e3ffcfdbc095d8183d6a31",
-              "title": "GraphQL Basics",
-              "description": "Understand GraphQL and its advantages over REST.",
-              "summary": "Covers GraphQL schema, queries, mutations, and subscriptions.",
-              "type": "Optional",
-              "link": "https://www.geeksforgeeks.org/graphql/",
-              "__v": 0
-          },
-          {
-              "_id": "67e3ffcfdbc095d8183d6a32",
-              "title": "DevOps & Deployment",
-              "description": "Learn CI/CD, Docker, and cloud deployment strategies.",
-              "summary": "Discusses CI/CD pipelines, Docker containers, and cloud deployment.",
-              "type": "Optional",
-              "link": "https://www.geeksforgeeks.org/devops/",
-              "__v": 0
-          }
-      ],
-      "edges": [
-          { "from": { "_id": "67e3ffcfdbc095d8183d6a28" }, "to": { "_id": "67e3ffcfdbc095d8183d6a29" }, "label": "Prerequisite", "_id": "67e3ffcfdbc095d8183d6a2d" },
-          { "from": { "_id": "67e3ffcfdbc095d8183d6a29" }, "to": { "_id": "67e3ffcfdbc095d8183d6a2a" }, "label": "Prerequisite", "_id": "67e3ffcfdbc095d8183d6a33" },
-          { "from": { "_id": "67e3ffcfdbc095d8183d6a29" }, "to": { "_id": "67e3ffcfdbc095d8183d6a2b" }, "label": "Prerequisite", "_id": "67e3ffcfdbc095d8183d6a34" },
-          { "from": { "_id": "67e3ffcfdbc095d8183d6a2b" }, "to": { "_id": "67e3ffcfdbc095d8183d6a30" }, "label": "Prerequisite", "_id": "67e3ffcfdbc095d8183d6a35" },
-          { "from": { "_id": "67e3ffcfdbc095d8183d6a2b" }, "to": { "_id": "67e3ffcfdbc095d8183d6a2f" }, "label": "Corequisite", "_id": "67e3ffcfdbc095d8183d6a36" },
-          { "from": { "_id": "67e3ffcfdbc095d8183d6a2f" }, "to": { "_id": "67e3ffcfdbc095d8183d6a30" }, "label": "Prerequisite", "_id": "67e3ffcfdbc095d8183d6a37" },
-          { "from": { "_id": "67e3ffcfdbc095d8183d6a30" }, "to": { "_id": "67e3ffcfdbc095d8183d6a31" }, "label": "Optional Path", "_id": "67e3ffcfdbc095d8183d6a38" },
-          { "from": { "_id": "67e3ffcfdbc095d8183d6a30" }, "to": { "_id": "67e3ffcfdbc095d8183d6a32" }, "label": "Corequisite", "_id": "67e3ffcfdbc095d8183d6a39" }
-      ],
-      "createdAt": "2025-03-26T13:23:27.244Z",
-      "updatedAt": "2025-03-26T13:23:27.244Z",
-      "__v": 0
-  }
-];
 
 // Get icon based on node title
 const getNodeIcon = (title: string) => {
@@ -322,12 +229,51 @@ const FlowChart: React.FC = () => {
   const [nodes, setNodes] = useState<Node[]>([]);
   const [edges, setEdges] = useState<Edge[]>([]);
   const [completedNodes, setCompletedNodes] = useState<Set<string>>(new Set());
+  const [flowData, setFlowData] = useState<FlowChartData[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+  
+  const location = useLocation();
+  const navigate = useNavigate();
+  const planId = location.state?.planId;
 
   useEffect(() => {
-    const { nodes: flowNodes, edges: flowEdges } = transformFlowData(flowData, completedNodes);
-    setNodes(flowNodes);
-    setEdges(flowEdges);
-  }, [completedNodes]);
+    const fetchPlanData = async () => {
+      if (!planId) {
+        // If no planId is provided, navigate back to plans
+        navigate('/plans');
+        return;
+      }
+      
+      setIsLoading(true);
+      try {
+        const data = await getStudyPlan(planId);
+        // API returns array, but we need just one plan
+        const planData = Array.isArray(data) ? data.find(plan => plan._id === planId) : data;
+        
+        if (!planData) {
+          throw new Error("Study plan not found");
+        }
+        
+        setFlowData([planData]);
+      } catch (error: any) {
+        console.error("Error fetching flow data:", error);
+        setError(error.message || "Failed to load study plan");
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    fetchPlanData();
+  }, [planId, navigate]);
+
+  useEffect(() => {
+    if (flowData.length > 0) {
+      const { nodes: flowNodes, edges: flowEdges } = transformFlowData(flowData, completedNodes);
+      setNodes(flowNodes);
+      setEdges(flowEdges);
+    }
+  }, [flowData, completedNodes]);
 
   const onNodesChange: OnNodesChange = useCallback(
     (changes) => setNodes((nds) => applyNodeChanges(changes, nds)),
@@ -352,15 +298,46 @@ const FlowChart: React.FC = () => {
     []
   );
 
+  if (isLoading) {
+    return (
+      <div className="min-h-screen bg-slate-950 pt-20 mt-10 px-8 flex items-center justify-center">
+        <div className="text-white text-xl">Loading roadmap...</div>
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="min-h-screen bg-slate-950 pt-20 mt-10 px-8 flex flex-col items-center justify-center">
+        <div className="text-red-400 text-xl mb-4">Error: {error}</div>
+        <button 
+          className="px-4 py-2 bg-slate-800 text-white rounded-md hover:bg-slate-700"
+          onClick={() => navigate('/plans')}
+        >
+          Return to Roadmaps
+        </button>
+      </div>
+    );
+  }
+
   const totalNodes = flowData.length > 0 ? flowData[0].nodes.length : 0;
   const completedCount = completedNodes.size;
 
   return (
     <div className="min-h-screen bg-slate-950 pt-20 mt-10 px-8">
-      <h1 className="text-3xl font-bold mb-4 text-white flex items-center gap-2">
-        <BookOpen className="h-6 w-6" />
-        {flowData.length > 0 ? flowData[0].title : "Learning Roadmap"}
-      </h1>
+      <div className="flex justify-between items-center mb-4">
+        <h1 className="text-3xl font-bold text-white flex items-center gap-2">
+          <BookOpen className="h-6 w-6" />
+          {flowData.length > 0 ? flowData[0].title : "Learning Roadmap"}
+        </h1>
+        
+        <button 
+          className="px-4 py-2 bg-slate-800 text-white rounded-md hover:bg-slate-700"
+          onClick={() => navigate('/plans')}
+        >
+          Back to Roadmaps
+        </button>
+      </div>
       
       {/* Completion counter */}
       <div className="mb-4 text-slate-300">
