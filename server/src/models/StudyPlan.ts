@@ -6,6 +6,7 @@ const StudyPlanNodeSchema = new Schema({
     description: { type: String },
     type: { type: String, required: true, enum: ['Mandatory', 'Optional'] },
     link: { type: String, default: "" },
+    progress: { type: Number, default: 0 }
 });
 
 const StudyPlanEdgeSchema = new Schema({

@@ -6,7 +6,7 @@ const DailyActivitySchema = new Schema({
     date: { type: Date, required: true },
     activities: [
       {
-        type: { type: String, enum: ['study_progress', 'interview'], required: true },
+        type: { type: String, enum: ['study_progress', 'interview', 'streak'], required: true },
         studyPlan: { type: Schema.Types.ObjectId, ref: 'StudyPlan' }, 
         studyNode: { type: Schema.Types.ObjectId, ref: 'StudyPlanNode' },
         interview: { type: Schema.Types.ObjectId, ref: 'Interview' },
