@@ -266,3 +266,34 @@ const callGroqAI = async (messages: any[],task:string) => {
         return "Token limit exceeded";
     }
 }
+
+export const GenMcqQuestions = async (): Promise<{ question: string; options: string[]; correctAnswer: string }[]> => {
+  const topics = ["ML", "Programming", "Aptitude", "Web Dev"];
+  const subject = "Computer Science";
+  const topic = topics[Math.floor(Math.random() * topics.length)];
+  const mcqArray: { question: string; options: string[]; correctAnswer: string }[] = [];
+  
+  for (let i = 0; i < 6; i++) {
+      const messages = [
+          {
+              role: "user",
+              content: `You are a professional ${subject} teacher.\nGenerate exactly 1 multiple-choice question (MCQ) for ${topic} within ${subject}.\nFormat:\n[\n    {\n        "question": "What is ...?",\n        "options": ["option 1", "option 2", "option 3", "option 4"],\n        "correctAnswer": "correct option"\n    }\n]\nReturn ONLY a valid JSON array with NO extra text.`
+          }
+      ];
+      
+      const responseString: string = await callGroqAI(messages, "Generate MCQ");
+      
+      try {
+          const quizArray: { question: string; options: string[]; correctAnswer: string }[] = JSON.parse(responseString);
+          if (Array.isArray(quizArray) && quizArray.length === 1) {
+              mcqArray.push(quizArray[0]);
+          } else {
+              console.error(`❌ Invalid response format for topic: ${topic}`);
+          }
+      } catch (e) {
+          console.error(`❌ Error parsing response for topic: ${topic}:`, e);
+      }
+  }
+  
+  return mcqArray;
+}
