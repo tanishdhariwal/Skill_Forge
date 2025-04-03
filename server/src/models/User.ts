@@ -70,9 +70,8 @@ const userSchema = new Schema({
         type:Number,
         default: 0
     },
-
-    
-
+    quizzesCompleted: { type: Number, default: 0 },
+    challengesCompleted: { type: Number, default: 0 }
 
 }, { timestamps: true });
 
