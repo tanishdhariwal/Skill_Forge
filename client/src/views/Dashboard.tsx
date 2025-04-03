@@ -83,7 +83,7 @@ const mockLearningTopics = [
   }
 ];
 
-const mockStreakData = {
+const initialStreakData = {
   currentStreak: 15,
   longestStreak: 28,
   thisMonth: 22,
@@ -92,13 +92,13 @@ const mockStreakData = {
     { date: '2023-10-01', completed: true },
     { date: '2023-10-02', completed: true },
     { date: '2023-10-03', completed: true },
-    { date: '2023-10-04', completed: true },
+    { date: '2023-10-04', completed: false },
     { date: '2023-10-05', completed: true },
     { date: '2023-10-06', completed: false },
     { date: '2023-10-07', completed: true },
-    { date: '2023-10-08', completed: true },
+    { date: '2023-10-08', completed: false },
     { date: '2023-10-09', completed: true },
-    { date: '2023-10-10', completed: true },
+    { date: '2023-10-10', completed: false },
     { date: '2023-10-11', completed: true },
     { date: '2023-10-12', completed: true },
     { date: '2023-10-13', completed: true },
@@ -165,6 +165,7 @@ const Dashboard = () => {
       
       // Find if this day has a streak
       const dateString = date.toISOString().split('T')[0];
+      const streakDay = streakData.streakCalendar.find(day => day.date === dateString);
       const streakDay = streakData.streakCalendar.find(day => day.date === dateString);
       
       calendarDays.push({
@@ -240,6 +241,7 @@ const Dashboard = () => {
           {/* Stats Summary */}
           <motion.div variants={itemVariants} className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
             {[
+              { label: 'Current Streak', value: `${streakData.currentStreak} days`, icon: Flame, color: 'text-orange-500' },
               { label: 'Current Streak', value: `${streakData.currentStreak} days`, icon: Flame, color: 'text-orange-500' },
               { label: 'Avg. Score', value: '82%', icon: BarChart3, color: 'text-blue-500' },
               { label: 'Time Invested', value: '86 hours', icon: Clock, color: 'text-purple-500' }
@@ -372,12 +374,14 @@ const Dashboard = () => {
                       <Flame className="h-6 w-6 mx-auto" />
                     </div>
                     <p className="text-2xl font-bold">{streakData.longestStreak}</p>
+                    <p className="text-2xl font-bold">{streakData.longestStreak}</p>
                     <p className="text-xs text-gray-400">Longest Streak</p>
                   </div>
                   <div className="text-center">
                     <div className="text-green-500">
                       <BookOpen className="h-6 w-6 mx-auto" />
                     </div>
+                    <p className="text-2xl font-bold">{streakData.thisMonth}</p>
                     <p className="text-2xl font-bold">{streakData.thisMonth}</p>
                     <p className="text-xs text-gray-400">This Month</p>
                   </div>
@@ -386,21 +390,28 @@ const Dashboard = () => {
                 <div className="mt-4">
                   <div className="text-sm text-gray-400 mb-2">Last 30 Days</div>
                   <div className="grid grid-cols-7 gap-1">
-                    {calendarDays.map((day, i) => (
-                      <div 
-                        key={i} 
-                        className={`relative aspect-square rounded-sm flex items-center justify-center text-xs ${
-                          day.completed === true 
-                            ? 'bg-orange-500/50 text-orange-100' 
-                            : 'bg-gray-700/50 text-gray-400'
-                        }`}
-                      >
-                        {day.day}
-                        {day.completed && (
-                          <span className="absolute top-0.5 right-0.5 h-1.5 w-1.5 bg-green-400 rounded-full"></span>
-                        )}
-                      </div>
-                    ))}
+                    {calendarDays.map((day, i) => {
+                      // Simplified color assignment based directly on completion status
+                      let colorClass = "bg-gray-700/50 text-gray-400"; // default for days without data
+                      
+                      if (day.completed === true) {
+                        colorClass = "bg-blue-600/50 text-blue-100"; // completed day - true
+                      } else if (day.completed === false) {
+                        colorClass = "bg-orange-600/50 text-orange-100"; // missed day - false
+                      }
+                      
+                      return (
+                        <div 
+                          key={i} 
+                          className={`relative aspect-square rounded-sm flex items-center justify-center text-xs ${colorClass}`}
+                        >
+                          {day.day}
+                          {day.completed && (
+                            <span className="absolute top-0.5 right-0.5 h-1.5 w-1.5 bg-white rounded-full"></span>
+                          )}
+                        </div>
+                      );
+                    })}
                   </div>
                 </div>
               </motion.div>

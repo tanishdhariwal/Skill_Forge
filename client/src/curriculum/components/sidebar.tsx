@@ -8,9 +8,10 @@ import { type ContentType } from "@/App"
 interface SidebarProps {
   activeContent: ContentType
   setActiveContent: (content: ContentType) => void
+  courseTitle: string
 }
 
-export function Sidebar({ activeContent, setActiveContent }: SidebarProps) {
+export function Sidebar({ activeContent, setActiveContent, courseTitle }: SidebarProps) {
   const menuItems = [
     {
       id: "read",
@@ -42,7 +43,7 @@ export function Sidebar({ activeContent, setActiveContent }: SidebarProps) {
       className="w-64 border-r border-gray-800 bg-gray-900/50 backdrop-blur-sm overflow-hidden"
     >
       <div className="p-4">
-        <h2 className="mb-4 text-xl font-semibold text-gray-100">Advanced React</h2>
+        <h2 className="mb-4 text-xl font-semibold text-gray-100">{courseTitle}</h2>
         <nav className="space-y-2">
           {menuItems.map((item) => {
             const isActive = activeContent === item.id

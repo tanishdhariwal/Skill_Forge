@@ -26,95 +26,6 @@ const userData = {
   ]
 };
 
-// Function to generate activity data for the contribution graph
-const generateActivityData = () => {
-  const today = new Date();
-  const activityData = [];
-  
-  for (let i = 0; i < 365; i++) {
-    const date = new Date(today);
-    date.setDate(date.getDate() - i);
-    
-    // Random activity level (0-3)
-    const activityLevel = Math.floor(Math.random() * 4);
-    
-    activityData.push({
-      date: date.toISOString().split('T')[0],
-      count: activityLevel
-    });
-  }
-  
-  return activityData.reverse();
-};
-
-// Component for each cell in the contribution graph
-const ActivityCell = ({ count }: { count: number }) => {
-  const getColorClass = () => {
-    switch (count) {
-      case 0: return "bg-slate-800";
-      case 1: return "bg-green-900";
-      case 2: return "bg-green-700";
-      case 3: return "bg-green-500";
-      default: return "bg-slate-800";
-    }
-  };
-  
-  return (
-    <div 
-      className={`w-3 h-3 rounded-sm ${getColorClass()} hover:ring-1 hover:ring-white`}
-      title={`${count} activities on this day`}
-    />
-  );
-};
-
-// Contribution Graph Component
-const ContributionGraph = () => {
-  const [activityData, setActivityData] = useState<Array<{ date: string, count: number }>>([]);
-  
-  useEffect(() => {
-    setActivityData(generateActivityData());
-  }, []);
-  
-  // Group by week for display
-  const weeks = [];
-  for (let i = 0; i < activityData.length; i += 7) {
-    weeks.push(activityData.slice(i, i + 7));
-  }
-  
-  return (
-    <div className="w-full overflow-x-auto">
-      <div className="text-lg font-semibold mb-2">Activity</div>
-      <div className="grid grid-flow-col gap-1 py-2">
-        {weeks.map((week, weekIndex) => (
-          <div key={weekIndex} className="grid grid-flow-row gap-1">
-            {week.map((day, dayIndex) => (
-              <ActivityCell key={`${weekIndex}-${dayIndex}`} count={day.count} />
-            ))}
-          </div>
-        ))}
-      </div>
-      <div className="flex items-center justify-end mt-2 text-xs text-slate-400">
-        <div className="flex items-center gap-1 mr-2">
-          <div className="w-3 h-3 bg-slate-800 rounded-sm"></div>
-          <span>None</span>
-        </div>
-        <div className="flex items-center gap-1 mr-2">
-          <div className="w-3 h-3 bg-green-900 rounded-sm"></div>
-          <span>Low</span>
-        </div>
-        <div className="flex items-center gap-1 mr-2">
-          <div className="w-3 h-3 bg-green-700 rounded-sm"></div>
-          <span>Medium</span>
-        </div>
-        <div className="flex items-center gap-1">
-          <div className="w-3 h-3 bg-green-500 rounded-sm"></div>
-          <span>High</span>
-        </div>
-      </div>
-    </div>
-  );
-};
-
 // CountUp component for counter animations
 const CountUp = ({ end }: { end: number }) => {
   const [count, setCount] = useState(0);
@@ -142,7 +53,7 @@ export const Profile = () => {
         className="container mx-auto px-4 py-6"
       >
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-          {/* Profile Info */}
+          {/* Profile Info - Now using one column */}
           <div className="md:col-span-1">
             <Card className="bg-slate-900 border-slate-800">
               <CardContent className="pt-6">
@@ -256,15 +167,8 @@ export const Profile = () => {
             </Button>
           </div>
 
-          {/* Main Content */}
+          {/* Main Content - Now spans 2 columns */}
           <div className="md:col-span-2">
-            {/* Contribution Graph */}
-            <Card className="bg-slate-900 border-slate-800 mb-6">
-              <CardContent className="pt-6">
-                <ContributionGraph />
-              </CardContent>
-            </Card>
-
             {/* Custom Roadmaps */}
             <h3 className="text-xl font-semibold mb-4">Your Study Plans</h3>
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
@@ -290,6 +194,65 @@ export const Profile = () => {
                   </Card>
                 </motion.div>
               ))}
+            </div>
+
+            {/* Added: Additional stats or info section to fill the space */}
+            <div className="mt-6">
+              <Card className="bg-slate-900 border-slate-800">
+                <CardHeader>
+                  <CardTitle className="text-lg">Learning Summary</CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div className="p-4 bg-slate-800 rounded-lg">
+                      <h4 className="font-medium mb-2">Strongest Skills</h4>
+                      <div className="flex flex-wrap gap-2">
+                        <span className="px-2 py-1 bg-green-900/30 text-green-400 rounded-md text-sm">SQL</span>
+                        <span className="px-2 py-1 bg-blue-900/30 text-blue-400 rounded-md text-sm">React</span>
+                        <span className="px-2 py-1 bg-purple-900/30 text-purple-400 rounded-md text-sm">JavaScript</span>
+                      </div>
+                    </div>
+                    <div className="p-4 bg-slate-800 rounded-lg">
+                      <h4 className="font-medium mb-2">Focus Areas</h4>
+                      <div className="flex flex-wrap gap-2">
+                        <span className="px-2 py-1 bg-amber-900/30 text-amber-400 rounded-md text-sm">System Design</span>
+                        <span className="px-2 py-1 bg-red-900/30 text-red-400 rounded-md text-sm">Algorithms</span>
+                      </div>
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
+            </div>
+
+            {/* Added: Recent achievements section */}
+            <div className="mt-6">
+              <Card className="bg-slate-900 border-slate-800">
+                <CardHeader>
+                  <CardTitle className="text-lg">Recent Achievements</CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <ul className="space-y-3">
+                    <li className="flex items-center p-2 bg-slate-800 rounded-md">
+                      <div className="h-8 w-8 rounded-full bg-green-900/40 flex items-center justify-center mr-3">
+                        <Award className="h-4 w-4 text-green-400" />
+                      </div>
+                      <div>
+                        <p className="font-medium">Completed React Advanced Course</p>
+                        <p className="text-sm text-slate-400">Last week</p>
+                      </div>
+                    </li>
+                    <li className="flex items-center p-2 bg-slate-800 rounded-md">
+                      <div className="h-8 w-8 rounded-full bg-blue-900/40 flex items-center justify-center mr-3">
+                        <Flame className="h-4 w-4 text-blue-400" />
+                      </div>
+                      <div>
+                        <p className="font-medium">7-Day Streak Milestone</p>
+                        <p className="text-sm text-slate-400">2 days ago</p>
+                      </div>
+                    </li>
+                  </ul>
+                </CardContent>
+              </Card>
             </div>
           </div>
         </div>
