@@ -7,6 +7,7 @@ import Dashboard from "./views/Dashboard";
 import Profile from "./views/Profile";
 import { ViewAnalysis } from "./views/ViewAnalysis.tsx";
 import LearningEnvironment from "./views/LearningEnvironment.tsx";
+import DailyQuestion from "./views/DailyQuestion";
 
 function App() {
   return (
@@ -15,8 +16,9 @@ function App() {
       <Route path="/login" element={<LogiPage />} />
       <Route path="/dashboard" element={<Dashboard />} />
       <Route path="/profile" element={<Profile/>} />
-      < Route path="/analysis" element={<ViewAnalysis />} />
+      <Route path="/analysis" element={<ViewAnalysis />} />
       <Route path="/learn" element={<LearningEnvironment />} />
+      <Route path="/daily-question" element={<DailyQuestion />} />
       <Route path="*" element={<PageNotFound />} />
     </Routes>
   );

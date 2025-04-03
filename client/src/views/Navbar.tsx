@@ -23,11 +23,13 @@ const Navbar = () => {
           Start a Battle
         </button>
         
-        {/* Fire symbol with points */}
-        <div className="flex items-center bg-gray-800 px-3 py-1.5 rounded-full">
-          <Flame className="h-5 w-5 text-orange-500 mr-2" />
-          <span className="text-white font-medium">{points}</span>
-        </div>
+        {/* Fire symbol with points - now clickable and links to Daily Question */}
+        <Link to="/daily-question" className="block">
+          <div className="flex items-center bg-gray-800 px-3 py-1.5 rounded-full hover:bg-gray-700 transition-colors">
+            <Flame className="h-5 w-5 text-orange-500 mr-2" />
+            <span className="text-white font-medium">{points}</span>
+          </div>
+        </Link>
         
         {/* Avatar linked to profile */}
         <Link to="/profile" className="block">
