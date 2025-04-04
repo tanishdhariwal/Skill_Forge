@@ -3,14 +3,13 @@
 import { motion } from "framer-motion"
 
 type Question = {
-  id: number
   question: string
   options: string[]
   correctAnswer: string
 }
 
 type QuestionDisplayProps = {
-  question: Question
+  question: Question | null
   selectedAnswer: string | null
   onSelectAnswer: (answer: string) => void
   isLocked: boolean
@@ -24,6 +23,10 @@ export default function QuestionDisplay({
   isLocked,
   showCorrectAnswer,
 }: QuestionDisplayProps) {
+  if (!question) {
+    return null
+  }
+
   return (
     <div className="w-full">
       <motion.h2
@@ -42,7 +45,7 @@ export default function QuestionDisplay({
             initial={{ opacity: 0, x: index % 2 === 0 ? -20 : 20 }}
             animate={{ opacity: 1, x: 0 }}
             transition={{ duration: 0.5, delay: 0.1 * index }}
-            onClick={() => !isLocked && onSelectAnswer(option)}
+            onClick={(e) => { e.stopPropagation(); !isLocked && onSelectAnswer(option) }}
             className={`
               p-4 rounded-lg cursor-pointer transition-all
               ${isLocked && selectedAnswer !== option ? "opacity-50" : ""}
@@ -57,9 +60,10 @@ export default function QuestionDisplay({
                   ? "bg-red-600 border-2 border-red-400"
                   : ""
               }
+              ${!isLocked ? "hover:scale-105" : ""}
             `}
           >
-            <p className="text-white text-lg font-medium">{option}</p>
+            <p className="text-white text-lg font-medium select-none">{option}</p>
           </motion.div>
         ))}
       </div>

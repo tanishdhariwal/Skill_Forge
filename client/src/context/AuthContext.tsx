@@ -9,6 +9,7 @@ import { loginUser, logoutUser, checkAuthStatus, signup as signupAPI } from "../
 
 type User = {
   username: string;
+  quizRating?: number;
 };
 
 type UserAuth = {

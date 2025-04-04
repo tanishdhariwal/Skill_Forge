@@ -17,12 +17,13 @@ import Plans from "./studyPlan/Plans.tsx";
 import FlowChart from "./studyPlan/FlowChart.tsx";
 import Interview from "./views/Interview";
 import BattleArena from "./BattleArena/Arena.tsx";
+import { QuizAuthProvider } from "./context/QuizAuthContext";
 
 // New layout for authenticated routes, placing Navbar on top
 function AuthenticatedLayout() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   return (
-    <>
+    <QuizAuthProvider>
       <Navbar />
       {/* Mobile Navigation Toggle moved from Dashboard */}
       <div className="md:hidden fixed top-4 right-4 z-50">
@@ -38,7 +39,7 @@ function AuthenticatedLayout() {
         </button>
       </div>
       <Outlet context={{ mobileMenuOpen, setMobileMenuOpen }} />
-    </>
+    </QuizAuthProvider>
   );
 }
 

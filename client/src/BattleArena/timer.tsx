@@ -7,12 +7,48 @@ type TimerProps = {
   duration: number
   onExpire: () => void
   isPaused: boolean
+  startTime?: number
 }
 
-export default function Timer({ duration, onExpire, isPaused }: TimerProps) {
+export default function Timer({ duration, onExpire, isPaused, startTime }: TimerProps) {
   const [timeLeft, setTimeLeft] = useState(duration)
   const timerRef = useRef<NodeJS.Timeout | null>(null)
   const controls = useAnimationControls()
+  const [hasExpired, setHasExpired] = useState(false)
+  const hasCalledOnExpire = useRef(false)
+
+  // Synchronize timer with server time
+  useEffect(() => {
+    if (startTime) {
+      const elapsed = Math.floor((Date.now() - startTime) / 1000)
+      const remaining = Math.max(duration - elapsed, 0)
+      setTimeLeft(remaining)
+      
+      // If synced time is already expired or very close to expiry
+      if (remaining <= 1 && !hasCalledOnExpire.current) {
+        hasCalledOnExpire.current = true
+        setHasExpired(true)
+        onExpire()
+      }
+    } else {
+      setTimeLeft(duration)
+      setHasExpired(false)
+      hasCalledOnExpire.current = false
+    }
+  }, [startTime, duration, onExpire])
+
+  // Reset expired state when component remounts (each question)
+  useEffect(() => {
+    setHasExpired(false)
+    hasCalledOnExpire.current = false
+    
+    return () => {
+      // Clean up on unmount
+      if (timerRef.current) {
+        clearInterval(timerRef.current)
+      }
+    }
+  }, [])
 
   // Shake animation when time is running low
   useEffect(() => {
@@ -34,39 +70,54 @@ export default function Timer({ duration, onExpire, isPaused }: TimerProps) {
 
   // Timer countdown
   useEffect(() => {
+    // Clear existing interval first
+    if (timerRef.current) {
+      clearInterval(timerRef.current)
+      timerRef.current = null
+    }
+    
     if (isPaused) {
-      if (timerRef.current) {
-        clearInterval(timerRef.current)
-      }
       return
     }
 
     if (timeLeft > 0) {
       timerRef.current = setInterval(() => {
         setTimeLeft((prev) => {
-          if (prev <= 1) {
+          const newValue = prev - 1
+          
+          if (newValue <= 0) {
+            // Clear interval and call onExpire only once
             if (timerRef.current) {
               clearInterval(timerRef.current)
+              timerRef.current = null
             }
-            onExpire()
+            
+            if (!hasCalledOnExpire.current) {
+              hasCalledOnExpire.current = true
+              setHasExpired(true)
+              onExpire()
+            }
+            
             return 0
           }
-          return prev - 1
+          
+          return newValue
         })
       }, 1000)
+    } else if (!hasExpired && !hasCalledOnExpire.current) {
+      // Just in case we start with timeLeft = 0
+      hasCalledOnExpire.current = true
+      setHasExpired(true)
+      onExpire()
     }
 
     return () => {
       if (timerRef.current) {
         clearInterval(timerRef.current)
+        timerRef.current = null
       }
     }
-  }, [timeLeft, onExpire, isPaused])
-
-  // Reset timer when duration changes
-  useEffect(() => {
-    setTimeLeft(duration)
-  }, [duration])
+  }, [timeLeft, onExpire, isPaused, hasExpired])
 
   // Calculate progress percentage
   const progress = (timeLeft / duration) * 100
