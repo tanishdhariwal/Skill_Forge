@@ -26,6 +26,8 @@ export function setupMatchmaking(io: Server) {
       attemptMatch(io);
     });
 
+    socket.on("submitAnswer", (data) => handleAnswer(io, socket, data));
+
     socket.on("disconnect", () => {
       console.log(`User disconnected: ${socket.id}`);
       
@@ -82,7 +84,43 @@ export function setupMatchmaking(io: Server) {
   });
 }
 
-function attemptMatch(io: Server) {
+// function attemptMatch(io: Server) {
+//   console.log("Attempting to match players...");
+//   if (matchmakingQueue.length >= 2) {
+//     const player1 = matchmakingQueue.shift();
+//     const player2 = matchmakingQueue.find(
+//       (p) => Math.abs(p.quizRating - (player1?.quizRating || 0)) <= 100
+//     );
+
+//     if (player1 && player2) {
+//       matchmakingQueue.splice(matchmakingQueue.indexOf(player2), 1);
+
+//       const match = {
+//         player1: player1.userId,
+//         player2: player2.userId,
+//         quizId: new mongoose.Types.ObjectId().toString(),
+//       };
+
+//       console.log(`Players matched: ${player1.userId} vs ${player2.userId}`);
+
+//       activeMatches.push(match);
+
+//       // Get socket IDs
+//       const player1Socket = userSockets.get(player1.userId);
+//       const player2Socket = userSockets.get(player2.userId);
+//       console.log(`Player 1 socket: ${player1Socket}, Player 2 socket: ${player2Socket}`);
+
+//       if (player1Socket) io.to(player1Socket).emit("matchFound", match);
+//       if (player2Socket) io.to(player2Socket).emit("matchFound", match);
+//     }
+
+//     // await startQuizBattle(io, player1, player2);
+//   }
+// }
+
+
+
+async function attemptMatch(io: Server) {
   console.log("Attempting to match players...");
   if (matchmakingQueue.length >= 2) {
     const player1 = matchmakingQueue.shift();
@@ -93,26 +131,120 @@ function attemptMatch(io: Server) {
     if (player1 && player2) {
       matchmakingQueue.splice(matchmakingQueue.indexOf(player2), 1);
 
+      const battleId = new mongoose.Types.ObjectId().toString();
+      const questions = await GenMcqQuestions();
+
       const match = {
         player1: player1.userId,
         player2: player2.userId,
-        quizId: new mongoose.Types.ObjectId().toString(),
+        quizId: battleId,
       };
 
       console.log(`Players matched: ${player1.userId} vs ${player2.userId}`);
+      console.log(`Generated questions:`, questions);
 
-      activeMatches.push(match);
-
-      // Get socket IDs
       const player1Socket = userSockets.get(player1.userId);
       const player2Socket = userSockets.get(player2.userId);
-      console.log(`Player 1 socket: ${player1Socket}, Player 2 socket: ${player2Socket}`);
 
+      activeMatches.push({
+        battleId,
+        players: [
+          { userId: player1.userId, socketId: player1Socket, score: 0, currentQuestion: 0 },
+          { userId: player2.userId, socketId: player2Socket, score: 0, currentQuestion: 0 }
+        ],
+        questions
+      });
+
+      // Emit "matchFound" to both clients
       if (player1Socket) io.to(player1Socket).emit("matchFound", match);
       if (player2Socket) io.to(player2Socket).emit("matchFound", match);
-    }
 
-    // await startQuizBattle(io, player1, player2);
+      // Emit first question to both
+      const firstQuestion = questions[0];
+      if (player1Socket) {
+        io.to(player1Socket).emit("nextQuestion", {
+          battleId,
+          question: firstQuestion.question,
+          options: firstQuestion.options
+        });
+      }
+      if (player2Socket) {
+        io.to(player2Socket).emit("nextQuestion", {
+          battleId,
+          question: firstQuestion.question,
+          options: firstQuestion.options
+        });
+      }
+    }
   }
 }
 
+
+function handleAnswer(io: Server, socket: any, data: { battleId: string; userId: string; answer: string }) {
+  console.log(`Received answer from ${data.userId}: ${data.answer}`);
+  // Find the match using battleId
+  console.log(`Searching for match with battleId: ${data.battleId}`);
+  console.log(`Active matches: ${JSON.stringify(activeMatches)}`);
+  const match = activeMatches.find((m) => m.battleId === data.battleId);
+  console.log(`Match found: ${match}`);
+  if (!match) return;
+
+  console.log(`Active players`, match.players);
+  const player = match.players.find((p) => p.userId === data.userId);
+
+  console.log(`Player found: ${player}`);
+  if (!player) return;
+  console.log(`Player ${player.userId} answered: ${data.answer}`);
+
+  const questionIndex = player.currentQuestion;
+  const question = match.questions[questionIndex];
+
+  // Validate answer
+  const isCorrect = data.answer === question.correctAnswer;
+  if (isCorrect) player.score++;
+
+  console.log(`Player ${player.userId} answered Q${questionIndex}: ${isCorrect ? "Correct" : "Wrong"}`);
+
+  // Move to the next question
+  player.currentQuestion++;
+
+  // Notify both players of the progress
+  match.players.forEach((p) => {
+    io.to(p.socketId).emit("updateScore", {
+      userId: player.userId,
+      newScore: player.score,
+      questionIndex,
+      correct: isCorrect,
+    });
+  });
+
+  // Check if both players have answered
+  const allAnswered = match.players.every((p) => p.currentQuestion > questionIndex);
+
+  if (allAnswered) {
+    if (questionIndex + 1 < match.questions.length) {
+      // Send next question
+      match.players.forEach((p) => {
+        io.to(p.socketId).emit("nextQuestion", {
+          battleId: match.battleId,
+          question: match.questions[questionIndex + 1].question,
+          options: match.questions[questionIndex + 1].options,
+        });
+      });
+    } else {
+      // Game Over - Send final results
+      match.players.forEach((p) => {
+        io.to(p.socketId).emit("matchOver", {
+          battleId: match.battleId,
+          results: match.players.map((pl) => ({
+            userId: pl.userId,
+            score: pl.score,
+          })),
+        });
+      });
+
+      // Remove match from activeMatches
+      activeMatches.splice(activeMatches.indexOf(match), 1);
+    }
+  }
+}
