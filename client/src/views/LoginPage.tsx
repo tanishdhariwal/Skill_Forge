@@ -74,7 +74,7 @@ export const LoginPage = () => {
       <div className="w-full md:w-1/2 flex flex-col justify-center items-start p-6 md:p-12 lg:p-16">
         <div className="w-full max-w-md mx-auto">
           <div className="text-left mb-8">
-            <h1 className="text-4xl font-bold tracking-tight">SKILL GARAGE</h1>
+            <h1 className="text-4xl font-bold tracking-tight">SKILL FORGE</h1>
             <p className="mt-2 text-gray-400">
               {isLogin ? 'Welcome back! Please log in.' : 'Join our platform to enhance your skills.'}
             </p>

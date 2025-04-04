@@ -152,7 +152,7 @@ const DailyQuestion = () => {
               >
                 <div className="flex justify-between items-start mb-6">
                   <div>
-                    <Badge className="mb-3">{currentQuestion.topic}</Badge>
+                    {/* <Badge className="mb-3">{currentQuestion.topic}</Badge> */}
                     <h2 className="text-xl font-semibold">{currentQuestion.question}</h2>
                   </div>
                   <div className="flex items-center text-sm text-gray-400">

@@ -12,7 +12,7 @@ import { useNavigate } from "react-router-dom"; // Import useNavigate here
 
 // Mock data for development
 const userData = {
-  username: "Ramesh",
+  username: "tana",
   avatarUrl: "/avatars/01.png",
   badges: ["Interview Pro", "Study Master", "Consistency King", "SQL Expert"],
   interviewsTaken: 42,

@@ -9,7 +9,6 @@ import {
   Flame,
   Home,
   Layers,
-  LogOut,
   Server,
   Settings
 } from 'lucide-react';
@@ -236,12 +235,6 @@ const Dashboard = () => {
           </nav>
 
           {/* Logout Button */}
-          <div className="p-5 border-t border-gray-800">
-            <button className="flex items-center w-full p-3 text-gray-300 rounded-md hover:bg-gray-800 transition-colors">
-              <LogOut className="mr-3 h-5 w-5" />
-              Logout
-            </button>
-          </div>
         </div>
       </aside>
 
