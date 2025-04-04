@@ -57,7 +57,7 @@ export const LandingPage = () => {
               <span className="text-3xl font-bold text-white">SKILL GARAGE</span>
             </div>
 
-            <nav className="hidden md:flex space-x-8">
+            {/* <nav className="hidden md:flex space-x-8">
               {["Home", "About", "Features", "Contact"].map((item) => (
                 <a
                   key={item}
@@ -67,7 +67,7 @@ export const LandingPage = () => {
                   {item}
                 </a>
               ))}
-            </nav>
+            </nav> */}
 
             <Link
               to="/login"

@@ -6,3 +6,4 @@ export const JWT_SECRET = process.env.JWT_SECRET;
 export const COOKIE_NAME = process.env.COOKIE_NAME;
 export const GROQ_API_KEY = process.env.GROQ_API_KEY;
 export const O1_KEY = process.env.O1_KEY;
+export const FRONTEND_URL = process.env.FRONTEND_URL;
