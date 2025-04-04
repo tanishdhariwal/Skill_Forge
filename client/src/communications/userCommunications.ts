@@ -1,6 +1,5 @@
 import axios from 'axios';
 import { toast } from 'react-hot-toast';
-import { useNavigate } from 'react-router-dom';
 export const loginUser = async (username: string, password: string) => {
 
     /**
@@ -21,7 +20,7 @@ op:
 } */
   try {
     const response = await axios.post('/user/login', { username, password });
-    toast.success(response.data.message || "Login successful");
+    toast.success("Login successful");
     return response.data;
   } catch (error: any) {
     toast.error(error.response?.data?.message || "Login failed");

@@ -16,6 +16,7 @@ import CourseSelection from "./views/CourseSelection";
 import Plans from "./studyPlan/Plans.tsx";
 import FlowChart from "./studyPlan/FlowChart.tsx";
 import Interview from "./views/Interview";
+import BattleArena from "./BattleArena/Arena.tsx";
 
 // New layout for authenticated routes, placing Navbar on top
 function AuthenticatedLayout() {
@@ -63,6 +64,7 @@ function App() {
           <Route path="/plans" element={<Plans />} />
           <Route path="/flow" element={<FlowChart />} />
           {/* Added Interview route */}
+          < Route path="/arena" element={<BattleArena />} />
           <Route path="/interview" element={<Interview />} />
         </Route>
       )}

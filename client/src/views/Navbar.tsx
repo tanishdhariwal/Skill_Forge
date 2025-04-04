@@ -7,6 +7,9 @@ const Navbar = () => {
   // Removed hardcoded points; now use state:
   const [points, setPoints] = useState<number>(1);
 
+  const startArena = () => {
+    window.location.href = '/arena';
+  };
   // NEW: Function to fetch points from API
   const fetchPoints = async () => {
     try {
@@ -37,7 +40,7 @@ const Navbar = () => {
       {/* Right side flex container for battle button, points and avatar */}
       <div className="flex items-center space-x-4">
         {/* Battle button on the right */}
-        <button className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-md transition-colors">
+        <button onClick={startArena} className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-md transition-colors">
           Start a Battle
         </button>
         

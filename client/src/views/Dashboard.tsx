@@ -257,7 +257,7 @@ const Dashboard = () => {
             {[
               { label: 'Current Streak', value: `${streakData.currentStreak} days`, icon: Flame, color: 'text-orange-500' },
               { label: 'Level', value: `${userdata.level}`, icon: BarChart3, color: 'text-blue-500' },
-              { label: 'Time Invested', value: '86 hours', icon: Clock, color: 'text-purple-500' }
+              { label: 'Time Invested', value: '5 hours', icon: Clock, color: 'text-purple-500' }
             ].map((stat, index) => (
               <motion.div
                 key={index}
