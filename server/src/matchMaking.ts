@@ -7,69 +7,83 @@ interface MatchRequest {
   quizRating: number;
 }
 
-interface BattleRequest extends MatchRequest {
-  socketId: string;
-}
-
-interface BattleSession {
-  battleId: string;
-  players: { userId: string; socketId: string; currentQuestion: number; score: number }[];
-  questions: { question: string; options: string[]; correctAnswer: string }[];
-}
 
 const matchmakingQueue: MatchRequest[] = [];
 const activeMatches: any[] = [];
 
-// New battle variables
-const battleQueue: BattleRequest[] = [];
-const battleSessions: BattleSession[] = [];
+
+// Store user socket connections
+const userSockets: Map<string, string> = new Map();
 
 export function setupMatchmaking(io: Server) {
   io.on("connection", (socket) => {
-    console.log("User connected: ", socket.id);
+    console.log(`User connected: ${socket.id}`);
 
     socket.on("joinQueue", (data: MatchRequest) => {
-        console.log("User joined queue: ", data.userId);
+      userSockets.set(data.userId, socket.id);
+      console.log(`User joined queue: ${data.userId}`);
       matchmakingQueue.push(data);
       attemptMatch(io);
     });
 
-    socket.on("joinBattle", (data: BattleRequest) => {
-        console.log("User joined battle queue: ", data.userId);
-      // Include socketId from the connection
-      battleQueue.push({ ...data, socketId: socket.id });
-      attemptBattleMatch(io);
-    });
-
-    socket.on("submitAnswer", async (data: { battleId: string; answer: string; userId: string }) => {
-        console.log("Answer submitted: ", data.answer);
-      const battle = battleSessions.find((b) => b.battleId === data.battleId);
-      if (!battle) return;
-      // Find player index in the battle session
-      const player = battle.players.find(p => p.userId === data.userId);
-      if (!player) return;
-      const question = battle.questions[player.currentQuestion];
-      // Update score if answer is correct
-      if (data.answer.trim().toLowerCase() === question.correctAnswer.trim().toLowerCase()) {
-        player.score += 1;
-      }
-      player.currentQuestion += 1;
-      // Broadcast progress update to both players
-      io.to(player.socketId).emit("battleProgress", battle.players);
-      battle.players.forEach(p => {
-        io.to(p.socketId).emit("battleProgress", battle.players);
-      });
-    });
-
     socket.on("disconnect", () => {
+      console.log(`User disconnected: ${socket.id}`);
+      
+      // Remove user from queues if they disconnect
+      for (let i = 0; i < matchmakingQueue.length; i++) {
+        if (userSockets.get(matchmakingQueue[i].userId) === socket.id) {
+          console.log(`Removing ${matchmakingQueue[i].userId} from matchmaking queue`);
+          matchmakingQueue.splice(i, 1);
+          break;
+        }
+      }
+      socket.on("matchFound", async (match) => {
+        console.log(`Starting match: ${match.player1} vs ${match.player2}`);
+  
+        // Generate questions for the match
+        const questions = await GenMcqQuestions();
 
-      console.log("User disconnected: ", socket.id);
-      // Optionally remove from queues if necessary...
+        console.log(`Generated questions: ${questions}`);
+        // Store match session
+        const battleId = new mongoose.Types.ObjectId().toString();
+        
+        activeMatches.push({
+          battleId,
+          players: [
+            { userId: match.player1, socketId: userSockets.get(match.player1), score: 0, currentQuestion: 0 },
+            { userId: match.player2, socketId: userSockets.get(match.player2), score: 0, currentQuestion: 0 }
+          ],
+          questions
+        });
+  
+        // Send first question to both players
+        activeMatches.forEach((m) => {
+          if (m.battleId === battleId) {
+            m.players.forEach((p) => {
+              io.to(p.socketId).emit("nextQuestion", {
+                battleId,
+                question: questions[0].question,
+                options: questions[0].options
+              });
+            });
+          }
+        });
+      });
+
+
+      // Remove user socket mapping
+      userSockets.forEach((value, key) => {
+        if (value === socket.id) {
+          console.log(`Removing user socket mapping for ${key}`);
+          userSockets.delete(key);
+        }
+      });
     });
   });
 }
 
 function attemptMatch(io: Server) {
+  console.log("Attempting to match players...");
   if (matchmakingQueue.length >= 2) {
     const player1 = matchmakingQueue.shift();
     const player2 = matchmakingQueue.find(
@@ -85,36 +99,20 @@ function attemptMatch(io: Server) {
         quizId: new mongoose.Types.ObjectId().toString(),
       };
 
+      console.log(`Players matched: ${player1.userId} vs ${player2.userId}`);
+
       activeMatches.push(match);
-      io.to(player1.userId).emit("matchFound", match);
-      io.to(player2.userId).emit("matchFound", match);
+
+      // Get socket IDs
+      const player1Socket = userSockets.get(player1.userId);
+      const player2Socket = userSockets.get(player2.userId);
+      console.log(`Player 1 socket: ${player1Socket}, Player 2 socket: ${player2Socket}`);
+
+      if (player1Socket) io.to(player1Socket).emit("matchFound", match);
+      if (player2Socket) io.to(player2Socket).emit("matchFound", match);
     }
+
+    // await startQuizBattle(io, player1, player2);
   }
 }
 
-async function attemptBattleMatch(io: Server) {
-  if (battleQueue.length >= 2) {
-    const battlePlayer1 = battleQueue.shift()!;
-    const battlePlayer2 = battleQueue.shift()!;
-    const battleId = new mongoose.Types.ObjectId().toString();
-    // Get MCQ battle questions (e.g., 6 questions)
-    const questions = await GenMcqQuestions();
-    const newBattle: BattleSession = {
-      battleId,
-      players: [
-        { userId: battlePlayer1.userId, socketId: battlePlayer1.socketId, currentQuestion: 0, score: 0 },
-        { userId: battlePlayer2.userId, socketId: battlePlayer2.socketId, currentQuestion: 0, score: 0 },
-      ],
-      questions,
-    };
-    battleSessions.push(newBattle);
-    // Emit battle start event to both players with questions (without revealing correct answers)
-    [battlePlayer1, battlePlayer2].forEach((p) => {
-      io.to(p.socketId).emit("battleStarted", {
-        battleId,
-        questions: newBattle.questions.map(q => ({ question: q.question, options: q.options })),
-        initialProgress: newBattle.players.map(player => ({ userId: player.userId, score: player.score }))
-      });
-    });
-  }
-}
