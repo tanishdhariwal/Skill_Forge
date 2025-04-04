@@ -10,6 +10,7 @@ import fs from "fs";
 import upload from "../utils/upload.js";
 // console.log("process.env.COOKIE_NAME", process.env.COOKIE_NAME);
 import { COOKIE_NAME } from "../utils/constant.js"; 
+import { FRONTEND_URL } from "../utils/constant.js";
 import { Interview } from "../models/Interview.js";
 import { StudyPlan } from "../models/StudyPlan.js";
 import { Badge } from "../models/Badge.js";
@@ -63,6 +64,8 @@ export const userLogin = async (
 ) => {
   try {
     const { username, password } = req.body;
+
+    console.log('coming into user login');
     const user = await User.findOne({ username });
     if (!user) {
       return res.status(401).send("User not registered");
@@ -84,18 +87,21 @@ export const userLogin = async (
 
     const expires = new Date();
     expires.setDate(expires.getDate() + 7);
-    console.log(COOKIE_NAME);
+    console.log(COOKIE_NAME+"   is the cookie name");
+    console.log(process.env.FRONTEND_URL +"   is the frontend url");
     res.cookie(COOKIE_NAME, token, {
       httpOnly: true,
       signed: true,
-      secure: true,
+      // domain: "10.10.10.44",
+      secure: false,
       maxAge: 3600000,
       path: "/",
+      // sameSite:true
     });
 
     return res
       .status(200)
-      .json({ message: "OK", name: user.username});
+      .json({ message: "OK", name: user.username,token:token });
   } catch (error) {
     console.log(error);
     return res.status(500).json({ message: "ERROR", cause: error.message });
