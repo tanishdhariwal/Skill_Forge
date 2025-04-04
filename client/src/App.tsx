@@ -58,7 +58,7 @@ function App() {
         <Route element={<AuthenticatedLayout />}>
           <Route path="/dashboard" element={<Dashboard />} />
           <Route path="/profile" element={<Profile />} />
-          <Route path="/analysis" element={<ViewAnalysis />} />
+          <Route path="/analysis/:id" element={<ViewAnalysis />} />
           <Route path="/learn" element={<CourseSelection />} />
           <Route path="/learn/:courseId" element={<LearningEnvironment />} />
           <Route path="/daily-question" element={<DailyQuestion />} />

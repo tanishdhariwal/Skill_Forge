@@ -9,6 +9,6 @@ interviewRouter.post("/next/:interview_id", verifyTokenUser,genrateNextQuestion)
 interviewRouter.post("/submit/:interview_id", verifyTokenUser,submitInterview);
 interviewRouter.get("/resume/:interview_id", verifyTokenUser,resumeInterview);
 interviewRouter.get("/all", verifyTokenUser,getAllInterviews);
-interviewRouter.get("/:interview_id", verifyTokenUser,getInterviewData);
+interviewRouter.get("/:id", verifyTokenUser,getInterviewData);
 
 export default interviewRouter;

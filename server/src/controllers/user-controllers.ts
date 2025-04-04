@@ -535,3 +535,29 @@ export const incrementInterviewCompleted = async (req: Request, res: Response) =
       return res.status(500).json({ message: 'Server error', cause: error.message });
   }
 }
+
+
+
+export const getAllUsers = async (req: Request, res: Response) => {
+  try {
+    const usersRaw = await User.find({}, {
+      _id: 1,
+      username: 1,
+      level: 1,
+      'streak.score': 1,
+      longestStreak: 1
+    });
+
+    const users = usersRaw.map(user => ({
+      _id: user._id,
+      username: user.username,
+      level: user.level,
+      currentStreak: user.streak?.score || 0, // rename streak.score -> currentStreak
+      longestStreak: user.longestStreak
+    }));
+    return res.status(200).json({ users });
+  } catch (error) {
+    console.error(error);
+    return res.status(500).json({ message: 'Server error', cause: error.message });
+  }
+}

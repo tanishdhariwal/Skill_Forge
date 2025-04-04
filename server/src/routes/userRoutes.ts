@@ -16,7 +16,8 @@ import {   userSignup,
     getAllBadges,
     addBadge,
     incrementInterviewCompleted,
-    incrementCountQuizCompleted} from "../controllers/user-controllers.js";
+    incrementCountQuizCompleted,
+    getAllUsers} from "../controllers/user-controllers.js";
 import {
   loginValidator,
   registerValidator,
@@ -46,4 +47,5 @@ userRoutes.get("/getAllBadges", verifyToken, getAllBadges);
 userRoutes.get("/checkBadges",verifyToken, addBadge);
 userRoutes.put("/incrementInterviewCompleted", verifyToken, incrementInterviewCompleted);
 userRoutes.put("/incrementQuizCompleted", verifyToken, incrementCountQuizCompleted);
+userRoutes.get("/getAllUsers", verifyToken, getAllUsers);
 export default userRoutes;
