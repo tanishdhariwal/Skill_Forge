@@ -137,6 +137,7 @@ const Dashboard = () => {
     const fetchData = async () => {
       try {
         const response = await fetchDashboardData();
+        console.log(response.interviewHistory, "dashboard data from user comms")
         if (response) {
           setDashboardData(prevData => ({
             userdata: response.userdata || prevData.userdata,
@@ -344,7 +345,7 @@ const Dashboard = () => {
                   {interviewHistory.map((interview) => (
                     <Link 
                       key={interview.id}
-                      to={`/analysis`}
+                      to={`/analysis/${interview.id}`} // Pass interview._id as a query parameter
                       className="bg-gray-800 p-4 rounded-lg hover:bg-gray-650 transition-colors cursor-pointer block"
                     >
                       <div className="flex justify-between items-start">

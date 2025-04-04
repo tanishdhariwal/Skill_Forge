@@ -136,7 +136,8 @@ export const getAllInterviews = async (req: Request, res: Response) => {
 
 export const getInterviewData = async (req: Request, res: Response) => {
     try {
-        const interview_id = req.params.interview_id;
+        console.log("req.params.interview_id", req.params);
+        const interview_id = req.params.id;
         const username = res.locals.jwtData.username;
         const user = await User.findOne({ username });
         if (!user) {

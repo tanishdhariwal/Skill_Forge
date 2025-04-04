@@ -89,18 +89,15 @@ export const checkAuthStatus = async () => {
      * 
      * res: {"name": "abcdef"}
      */
-  try {
-    const response = await axios.get('/user/auth-status');
-    return response.data;
-  } catch (error: any) {
-    throw error;
-  }
+  const response = await axios.get('/user/auth-status');
+  return response.data;
 };
 
 
 export const fetchDashboardData = async () => {
   try {
     const response = await axios.get('/user/dashboard');
+    // console.log(response.data, "dashboard data from user comms")
     return response.data;
   } catch (error) {
     toast.error('Failed to fetch dashboard data');
