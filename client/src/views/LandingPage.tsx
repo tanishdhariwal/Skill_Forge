@@ -169,14 +169,14 @@ export const LandingPage = () => {
               {
                 title: "Expert Guidance",
                 description: "Access curated resources and personalized tips",
-                variant: "yellow"
+                variant: "blue"
               }
             ].map((feature, index) => (
               <PixelCard key={index} variant={feature.variant as "blue" | "pink" | "yellow"}>
                 <div className="absolute inset-0 flex items-center justify-center p-6 text-center">
                   <div>
-                    <h3 className="text-xl font-semibold mb-2">{feature.title}</h3>
-                    <p className="text-sm text-gray-600">{feature.description}</p>
+                    <h3 className="text-3xl font-semibold mb-2">{feature.title}</h3>
+                    <p className="text-sm text-gray-100">{feature.description}</p>
                   </div>
                 </div>
               </PixelCard>
