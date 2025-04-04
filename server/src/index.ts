@@ -10,14 +10,17 @@ import studyPlanRoutes from './routes/roadmapRoutes.js';
 import interviewRouter from './routes/mockInterviewRoutes.js';
 import quizRoutes from './routes/quizRoutes.js';
 import { config } from 'dotenv';
+import { createServer } from 'http';
+import { Server } from 'socket.io';
+import { setupMatchmaking } from './matchMaking.js';
 dotenv.config();
 
 const app = express();
-const PORT = process.env.PORT || 5000;
+const PORT = parseInt(process.env.PORT || '5000', 10);
 
 connectDB();
 
-app.use(cors({origin:true,credentials:true}));
+app.use(cors({ origin: true, credentials: true }));
 app.use(express.json());
 app.use(cookieParser(process.env.COOKIE_SECRET));
 
@@ -27,11 +30,20 @@ app.use('/api/v1/interview', interviewRouter);
 app.use('/api/v1/quiz', quizRoutes);
 app.use('/api/v1/studyplan', studyPlanRoutes);
 
-
 app.get('/', (req: Request, res: Response) => {
   res.send('Hello, World!');
-})
-
-app.listen(PORT, () => {
-  console.log(`Server running on port ${PORT}`);
 });
+
+// Create HTTP server and initialize Socket.IO
+const server = createServer(app);
+const io = new Server(server, { cors: { origin: true, credentials: true } });
+setupMatchmaking(io);
+
+server.listen(4000, "0.0.0.0", () => {
+  console.log(`Server running on port 4000`);
+});
+
+app.listen(PORT, "0.0.0.0", () => {
+  console.log(`APP running on port 4000`);
+});
+

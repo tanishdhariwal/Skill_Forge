@@ -47,20 +47,49 @@ export const createStudyPlan = async (req: Request, res: Response) => {
 }
 
 
+export const getPlans = async (req: Request, res: Response) => {
 
-
-export const getStudyPlans = async (req: Request, res: Response) => {
     try {
         const username = res.locals.jwtData.username;
         const user =  await User.findOne({ username });
         if (!user) return res.status(401).json({ message: "Unauthorized" });
 
-        const studyPlans = await StudyPlan.find({ _id: { $in: user.studyPlans } })
+        const studyPlans = await StudyPlan.find({ _id: { $in: user.studyPlans } }, { _id: 1, title: 1 })
+
+        res.json(studyPlans);
+    } catch (err) {
+        console.error(err);
+        res.status(500).json({ message: "Server error" });
+    }
+
+}
+
+export const getStudyPlan = async (req: Request, res: Response) => {
+    try {
+        const username = res.locals.jwtData.username;
+        const user = await User.findOne({ username });
+        if (!user) return res.status(401).json({ message: "Unauthorized" });
+
+        const planId = req.params.id;
+        if (!planId) {
+            return res.status(400).json({ message: "Plan ID is required" });
+        }
+
+        // Check if the plan belongs to the user
+        if (!user.studyPlans.includes(new mongoose.Types.ObjectId(planId))) {
+            return res.status(403).json({ message: "You don't have access to this study plan" });
+        }
+
+        const studyPlan = await StudyPlan.findById(planId)
             .populate("nodes")
             .populate("edges.from")
             .populate("edges.to");
 
-        res.json(studyPlans);
+        if (!studyPlan) {
+            return res.status(404).json({ message: "Study plan not found" });
+        }
+
+        res.json(studyPlan);
     } catch (err) {
         console.error(err);
         res.status(500).json({ message: "Server error" });
