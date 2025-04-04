@@ -197,12 +197,36 @@ function handleAnswer(io: Server, socket: any, data: { battleId: string; userId:
   console.log(`Player ${player.userId} answered: ${data.answer}`);
 
   const questionIndex = player.currentQuestion;
+  console.log(`Current question index: ${questionIndex}`);
   const question = match.questions[questionIndex];
+  console.log(`Question: ${JSON.stringify(question)}`); 
 
   // Validate answer
-  const isCorrect = data.answer === question.correctAnswer;
-  if (isCorrect) player.score++;
+  const isCorrect = false;
+  if(question === undefined) {
+    console.log(`Question ${questionIndex} is undefined`);
+    match.players.forEach((p) => {
+      io.to(p.socketId).emit("matchOver", {
+        battleId: match.battleId,
+        results: match.players.map((pl) => ({
+          userId: pl.userId,
+          score: pl.score,
+        })),
+      });
+    });
 
+    // Remove match from activeMatches
+    activeMatches.splice(activeMatches.indexOf(match), 1);
+    return;
+  }
+  if(question.correctAnswer === undefined) {
+    console.log(`Question ${questionIndex} does not have a correct answer`);
+    const isCorrect = false;
+  }
+  else{
+    const isCorrect = data.answer === question.correctAnswer;
+    if (isCorrect) player.score++;
+  }
   console.log(`Player ${player.userId} answered Q${questionIndex}: ${isCorrect ? "Correct" : "Wrong"}`);
 
   // Move to the next question
@@ -219,10 +243,16 @@ function handleAnswer(io: Server, socket: any, data: { battleId: string; userId:
   });
 
   // Check if both players have answered
-  const allAnswered = match.players.every((p) => p.currentQuestion > questionIndex);
+  let allAnswered = match.players.every((p) => p.currentQuestion-1 > questionIndex);
+  console.log(`All players answered: ${allAnswered}`);
+  console.log(`length of questions: ${match.questions.length}`);
+  if(question === undefined) {
+    console.log(`Question ${questionIndex} is undefined`);
+    allAnswered = true;
+  }
 
   if (allAnswered) {
-    if (questionIndex + 1 < match.questions.length) {
+    if (questionIndex  < match.questions.length) {
       // Send next question
       match.players.forEach((p) => {
         io.to(p.socketId).emit("nextQuestion", {
