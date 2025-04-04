@@ -54,7 +54,9 @@ export const LandingPage = () => {
         <div className="container bg-transparent mx-auto  sm:px-6 lg:px-8">
           <div className="flex justify-between items-center py-4">
             <div className="flex items-center">
-              <span className="text-3xl font-bold text-white">SKILL GARAGE</span>
+              <span className="text-3xl font-bold text-white">
+                SKILL GARAGE
+              </span>
             </div>
 
             {/* <nav className="hidden md:flex space-x-8">
@@ -97,11 +99,8 @@ export const LandingPage = () => {
             initial="hidden"
             animate="visible"
           >
-            <motion.div
-              variants={itemVariants}
-              className="mb-6"
-            >
-              <TrueFocus 
+            <motion.div variants={itemVariants} className="mb-6">
+              <TrueFocus
                 sentence="Enter The New Learning Era"
                 manualMode={true}
                 blurAmount={6}
@@ -133,7 +132,10 @@ export const LandingPage = () => {
       </section>
 
       {/* Features Section with HoverCards */}
-      <section id="features" className="py-32 bg-blend-color-burn relative overflow-hidden">
+      <section
+        id="features"
+        className="py-32 bg-blend-color-burn relative overflow-hidden"
+      >
         <div className="absolute inset-0 z-0 opacity-40">
           <Aurora
             colorStops={["#00d8ff", "#7cff67", "#00d8ff"]}
@@ -159,24 +161,32 @@ export const LandingPage = () => {
               {
                 title: "AI-Powered Practice",
                 description: "Get instant feedback from our advanced AI system",
-                variant: "blue"
+                variant: "blue",
               },
               {
                 title: "Real-time Analytics",
-                description: "Track your progress with detailed performance metrics",
-                variant: "pink"
+                description:
+                  "Track your progress with detailed performance metrics",
+                variant: "pink",
               },
               {
                 title: "Expert Guidance",
                 description: "Access curated resources and personalized tips",
-                variant: "blue"
-              }
+                variant: "blue",
+              },
             ].map((feature, index) => (
-              <PixelCard key={index} variant={feature.variant as "blue" | "pink" | "yellow"}>
+              <PixelCard
+                key={index}
+                variant={feature.variant as "blue" | "pink" | "yellow"}
+              >
                 <div className="absolute inset-0 flex items-center justify-center p-6 text-center">
                   <div>
-                    <h3 className="text-3xl font-semibold mb-2">{feature.title}</h3>
-                    <p className="text-sm text-gray-100">{feature.description}</p>
+                    <h3 className="text-3xl font-semibold mb-2">
+                      {feature.title}
+                    </h3>
+                    <p className="text-sm text-gray-100">
+                      {feature.description}
+                    </p>
                   </div>
                 </div>
               </PixelCard>
@@ -204,13 +214,18 @@ export const LandingPage = () => {
             <p className="text-xl text-white/80 mb-8">
               Join thousands of students, Grow with us!
             </p>
-            <Link
+            <motion.div
+              whileHover={{ scale: 1.05, transition: { duration: 0.2 } }}
+              whileTap={{ scale: 0.95, transition: { duration: 0.1 } }}
+            >
+              <Link
               to="/login"
               className="inline-flex items-center px-8 py-4 rounded-lg bg-white text-gray-900 hover:bg-gray-100 text-lg font-medium transition-colors"
-            >
+              >
               Get Started Now
               <ChevronRight className="ml-2 h-5 w-5" />
-            </Link>
+              </Link>
+            </motion.div>
           </div>
         </div>
       </section>
