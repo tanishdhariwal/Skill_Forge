@@ -64,7 +64,8 @@ const Plans: React.FC = () => {
       // Add progress property if not exists
       const enhancedData = data.map((tile: RoadmapTile) => ({
         ...tile,
-        progress: tile.progress || Math.floor(Math.random() * 100), // Placeholder progress
+        //progress: tile.progress || Math.floor(Math.random() * 100), // Placeholder progress
+        progress: 0, // Placeholder progress
         description: tile.description || "Click to view this learning roadmap"
       }));
       setRoadmapData(enhancedData);

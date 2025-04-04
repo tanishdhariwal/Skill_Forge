@@ -54,7 +54,7 @@ export const LandingPage = () => {
         <div className="container bg-transparent mx-auto  sm:px-6 lg:px-8">
           <div className="flex justify-between items-center py-4">
             <div className="flex items-center">
-              <span className="text-3xl font-bold text-white">SKILL GARAGE</span>
+              <span className="text-3xl font-bold text-white">SKILL FORGE</span>
             </div>
 
             {/* <nav className="hidden md:flex space-x-8">
@@ -116,7 +116,7 @@ export const LandingPage = () => {
               className="text-xl md:text-2xl mb-8 text-white/90"
               variants={itemVariants}
             >
-              Learn with AI-powered feedback and expert guidance
+              Learn. Compete. Succeed
             </motion.p>
 
             <motion.div variants={itemVariants} className="space-x-4">
