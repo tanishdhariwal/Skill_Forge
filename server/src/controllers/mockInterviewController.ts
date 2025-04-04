@@ -30,7 +30,7 @@ export const startInterview = async (req: Request, res: Response) => {
     await interview.save();
     const exchanges = interview.exchanges
     const id = interview._id;
-    return res.status(200).json({ message: "OK",exchanges , title ,id});
+    return res.status(200).json({exchanges , title ,id});
 
   } catch (error) {
     console.log(error);
@@ -60,7 +60,7 @@ export const genrateNextQuestion = async (req: Request, res: Response) => {
     await interview.save();
     const exchanges = interview.exchanges
     const title = interview.title;
-    return res.status(200).json({ message: "OK",exchanges , title ,id});
+    return res.status(200).json({exchanges , title ,id});
     } catch (error) {
         console.log(error);
         return res.status(500).json({ message: "Internal Server Error" });
@@ -89,7 +89,7 @@ export const submitInterview = async (req: Request, res: Response) => {
             interview.interviewfeedback = interviewfeedback;
             interview.status = "complete";
             await interview.save();
-            return res.status(200).json({ message: "OK",interview_id:id});
+            return res.status(200).json({interview_id:id});
     } catch (error) {
         console.log(error);
         return res.status(500).json({ message: "Internal Server Error" });
@@ -109,7 +109,7 @@ export const resumeInterview = async (req: Request, res: Response) => {
         return res.status(404).json({ message: "Interview not found" });
         }
         const {exchanges, title} = interview;
-        return res.status(200).json({ message: "OK",exchanges , title ,interview_id});
+        return res.status(200).json({exchanges , title ,interview_id});
     }
     catch (error) {
         console.log(error);
@@ -125,7 +125,7 @@ export const getAllInterviews = async (req: Request, res: Response) => {
             return res.status(404).json({ message: "User not found" });
         }
         const interviews = await Interview.find({userRef: user._id});
-        return res.status(200).json({ message: "OK", interviews });
+        return res.status(200).json({interviews });
     }
     catch (error) {
         console.log(error);
@@ -147,7 +147,7 @@ export const getInterviewData = async (req: Request, res: Response) => {
         if (!interview) {
         return res.status(404).json({ message: "Interview not found" });
         }
-        return res.status(200).json({ message: "OK",interview});
+        return res.status(200).json({interview});
     } catch (error) {
         console.log(error);
         return res.status(500).json({ message: "Internal Server Error" });
